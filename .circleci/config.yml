@@ -186,7 +186,7 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - install-tar-gzip:      
+      - install_tar_gzip:      
           name: install tar gzip
           command: |
             yum -y install tar gzip
