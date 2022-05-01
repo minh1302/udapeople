@@ -359,7 +359,12 @@ jobs:
 #               # your code here
 #             fi
             
-
+# SLACK JOBS
+  slack-build-frontend:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - run: echo "slack-build-frontend"
 workflows:
   default:
     jobs:
