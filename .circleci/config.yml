@@ -364,70 +364,70 @@ workflows:
   default:
     jobs:
       - build-frontend
-      - slack/on-hold:
+      - slack_build_frontend:
           context: SLACK_APP
           filters:
             tags:
               only: /^v.*/
           requires:
             - build-frontend
-      - pause_frontend:
+      - pause_build_frontend:
           filters:
             tags:
               only: /^v.*/
           requires:
             - build-frontend
-            - slack/on-hold
+            - slack_build_frontend
           type: approval
       - build-backend
-      - slack/on-hold:
+      - slack_build_backend:
           context: SLACK_APP
           filters:
             tags:
               only: /^v.*/
           requires:
             - build-backend
-      - pause_backend:
+      - pause_build_backend:
           filters:
             tags:
               only: /^v.*/
           requires:
             - build-backend
-            - slack/on-hold
+            - slack_build_backend
           type: approval
       - test-frontend:
-          requires: [pause_frontend]
-      - slack/on-hold:
+          requires: [pause_build_frontend]
+      - slack_test_frontend:
           context: SLACK_APP
           filters:
             tags:
               only: /^v.*/
           requires:
             - test-frontend
-      - pause_frontend:
+      - pause_test_frontend:
           filters:
             tags:
               only: /^v.*/
           requires:
             - test-frontend
-            - slack/on-hold
+            - slack_test_frontend
           type: approval
       - test-backend:
-          requires: [pause_backend]
-      - slack/on-hold:
+          requires: [pause_build_backend]
+      - slack_test_backend:
           context: SLACK_APP
           filters:
             tags:
               only: /^v.*/
           requires:
             - test-backend
-      - pause_frontend:
+      - pause_test_backend:
           filters:
             tags:
               only: /^v.*/
           requires:
             - test-backend
-            - slack/on-hold
+            - slack_test_backend
           type: approval
       - scan-backend:
           requires: [build-backend]
