@@ -373,35 +373,35 @@ workflows:
           context: SLACK_APP
           filters:
             branches:
-              only: master
+              only: main
       - build-backend:
           context: SLACK_APP
           filters:
             branches:
-              only: master
+              only: main
       - test-frontend:
           context: SLACK_APP
           filters:
             branches:
-              only: master
+              only: main
           requires: [build-frontend]
       - test-backend:
           context: SLACK_APP
           filters:
             branches:
-              only: master
+              only: main
           requires: [build-backend]
       - scan-backend:
           context: SLACK_APP
           filters:
             branches:
-              only: master
+              only: main
           requires: [build-backend]
       - scan-frontend:
           context: SLACK_APP
           filters:
             branches:
-              only: master
+              only: main
           requires: [build-frontend]
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
