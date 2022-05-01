@@ -251,9 +251,12 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> .circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: workspace
+          root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
+            - project/.circleci/ansible/inventory.txt  
+
+      - destroy-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
       # Here's where you will add some code to rollback on failure   
 
       - slack/notify:
@@ -276,7 +279,7 @@ jobs:
       # attach workspace
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
-          at: /tmp/workspace
+          at: ~/
 
       - run:
           name: Install dependencies
@@ -286,7 +289,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook -i /tmp/workspace/inventory.txt .circleci/ansible/configure-server.yml 
+            ansible-playbook -i ~/inventory.txt .circleci/ansible/configure-server.yml 
       
       # Here's where you will add some code to rollback on failure  
       - destroy-environment:
