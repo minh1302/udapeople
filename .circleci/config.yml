@@ -484,5 +484,5 @@ workflows:
       #     requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
-      - remove-infrastructure
+      - remove-infrastructure:
           requires: [run-migrations]
