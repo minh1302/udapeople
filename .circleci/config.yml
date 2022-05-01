@@ -3,18 +3,32 @@ version: 2.1
 orbs: 
   slack: circleci/slack@4.9.4
 commands:
-  destroy-environment:
-    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+  destroy-backend-environment:
+    description: Destroy back-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
+      id:
+        default: "ID"
+        type: string 
     steps:
       - run:
-          name: Destroy environments
+          name: Destroy backend environments
           when: on_fail
           command: |
-            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force  
-            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws cloudformation delete-stack --stack-name udapeople-prontend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.id>>
+            
+  destroy-frontend-environment:
+    description: Destroy front-end cloudformation stacks given a workflow ID.
+    parameters:
+      id:
+        default: "ID"
+        type: string 
+    steps:
+      - run:
+          name: Destroy frontend environments
+          when: on_fail
+          command: |
+            aws s3 rb s3://udapeople-<<parameters.id>> --force  
+            aws cloudformation delete-stack --stack-name udapeople-prontend-<<parameters.id>>
 
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
@@ -198,6 +212,10 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
+              
+      - destroy-backend-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -206,6 +224,10 @@ jobs:
               --stack-name "udapeople-prontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
+
+      - destroy-frontend-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
       - run:
           name: Add back-end ip to ansible inventory
           command: |
@@ -223,7 +245,6 @@ jobs:
           event: fail
           template: basic_fail_1
 
-      - destroy-environment 
 
 #   configure-infrastructure:
 #     docker:
