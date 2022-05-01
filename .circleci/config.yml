@@ -53,10 +53,12 @@ jobs:
           key: frontend-build
 
       - slack/notify:
+          channel: general
           event: fail
-          mentions: '@EngineeringTeam'
           template: basic_fail_1
+
       - slack/notify:
+          channel: general
           event: pass
           template: success_tagged_deploy_1
 
@@ -76,13 +78,14 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-          
-      - slack/notify:
-          event: fail
-          mentions: '@EngineeringTeam'
-          template: basic_fail_1
 
       - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1
+          
+      - slack/notify:
+          channel: general
           event: pass
           template: success_tagged_deploy_1
 
@@ -102,13 +105,14 @@ jobs:
             cd frontend
             npm install
             npm run test
-          
+
       - slack/notify:
+          channel: general
           event: fail
-          mentions: '@EngineeringTeam'
           template: basic_fail_1
           
       - slack/notify:
+          channel: general
           event: pass
           template: success_tagged_deploy_1
                 
@@ -128,13 +132,14 @@ jobs:
             cd backend
             npm install
             npm run test
-          
+
       - slack/notify:
+          channel: general
           event: fail
-          mentions: '@EngineeringTeam'
           template: basic_fail_1
           
       - slack/notify:
+          channel: general
           event: pass
           template: success_tagged_deploy_1
             
@@ -156,13 +161,14 @@ jobs:
             npm install oauth-sign@^0.9.0
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-          
+
       - slack/notify:
+          channel: general
           event: fail
-          mentions: '@EngineeringTeam'
           template: basic_fail_1
           
       - slack/notify:
+          channel: general
           event: pass
           template: success_tagged_deploy_1
 
@@ -184,13 +190,14 @@ jobs:
             npm install oauth-sign@^0.9.0
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-          
+
       - slack/notify:
+          channel: general
           event: fail
-          mentions: '@EngineeringTeam'
           template: basic_fail_1
           
       - slack/notify:
+          channel: general
           event: pass
           template: success_tagged_deploy_1
 
@@ -358,100 +365,40 @@ jobs:
 #             then
 #               # your code here
 #             fi
-            
-# SLACK JOBS
-  slack-build-frontend:
-    docker:
-      - image: 'cimg/base:stable'
-    steps:
-      - run: echo "slack-build-frontend"
+
 workflows:
   default:
     jobs:
       - build-frontend:
-          filters:
-            branches:
-              only: master
-
-      - slack-build-frontend:
           context: SLACK_APP
           filters:
             branches:
               only: master
-          requires: [build-frontend]
-      - pause-build-frontend:
-          filters:
-            branches:
-              only: master
-          requires:
-            - build-frontend
-            - slack-build-frontend
-          type: approval
       - build-backend:
+          context: SLACK_APP
           filters:
             branches:
               only: master
-      - slack-build-backend:
-          context: SLACK_APP
-          filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - build-backend
-      - pause-build-backend:
-          filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - build-backend
-            - slack-build-backend
-          type: approval
       - test-frontend:
+          context: SLACK_APP
           filters:
             branches:
               only: master
           requires: [pause-build-frontend]
-      - slack-test-frontend:
-          context: SLACK_APP
-          filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - test-frontend
-      - pause-test-frontend:
-          filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - test-frontend
-            - slack-test-frontend
-          type: approval
       - test-backend:
+          context: SLACK_APP
           filters:
             branches:
               only: master
           requires: [pause-build-backend]
-      - slack-test-backend:
-          context: SLACK_APP
-          filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - test-backend
-      - pause-test-backend:
-          filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - test-backend
-            - slack-test-backend
-          type: approval
       - scan-backend:
+          context: SLACK_APP
           filters:
             branches:
               only: master
           requires: [build-backend]
       - scan-frontend:
+          context: SLACK_APP
           filters:
             branches:
               only: master
