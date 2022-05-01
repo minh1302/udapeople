@@ -364,70 +364,70 @@ workflows:
   default:
     jobs:
       - build-frontend
-      - slack_build_frontend:
+      - slack-build-frontend:
           context: SLACK_APP
           filters:
             tags:
               only: /^v.*/
           requires:
             - build-frontend
-      - pause_build_frontend:
+      - pause-build-frontend:
           filters:
             tags:
               only: /^v.*/
           requires:
             - build-frontend
-            - slack_build_frontend
+            - slack-build-frontend
           type: approval
       - build-backend
-      - slack_build_backend:
+      - slack-build-backend:
           context: SLACK_APP
           filters:
             tags:
               only: /^v.*/
           requires:
             - build-backend
-      - pause_build_backend:
+      - pause-build-backend:
           filters:
             tags:
               only: /^v.*/
           requires:
             - build-backend
-            - slack_build_backend
+            - slack-build-backend
           type: approval
       - test-frontend:
-          requires: [pause_build_frontend]
-      - slack_test_frontend:
+          requires: [pause-build-frontend]
+      - slack-test-frontend:
           context: SLACK_APP
           filters:
             tags:
               only: /^v.*/
           requires:
             - test-frontend
-      - pause_test_frontend:
+      - pause-test-frontend:
           filters:
             tags:
               only: /^v.*/
           requires:
             - test-frontend
-            - slack_test_frontend
+            - slack-test-frontend
           type: approval
       - test-backend:
-          requires: [pause_build_backend]
-      - slack_test_backend:
+          requires: [pause-build-backend]
+      - slack-test-backend:
           context: SLACK_APP
           filters:
             tags:
               only: /^v.*/
           requires:
             - test-backend
-      - pause_test_backend:
+      - pause-test-backend:
           filters:
             tags:
               only: /^v.*/
           requires:
             - test-backend
-            - slack_test_backend
+            - slack-test-backend
           type: approval
       - scan-backend:
           requires: [build-backend]
