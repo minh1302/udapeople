@@ -363,23 +363,29 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
+      - build-frontend:
+          filters:
+            branches:
+              only: master
+
       - slack-build-frontend:
           context: SLACK_APP
           filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - build-frontend
+            branches:
+              only: master
+          requires: [build-frontend]
       - pause-build-frontend:
           filters:
-            tags:
-              only: /^v.*/
+            branches:
+              only: master
           requires:
             - build-frontend
             - slack-build-frontend
           type: approval
-      - build-backend
+      - build-backend:
+          filters:
+            branches:
+              only: master
       - slack-build-backend:
           context: SLACK_APP
           filters:
@@ -396,6 +402,9 @@ workflows:
             - slack-build-backend
           type: approval
       - test-frontend:
+          filters:
+            branches:
+              only: master
           requires: [pause-build-frontend]
       - slack-test-frontend:
           context: SLACK_APP
@@ -413,6 +422,9 @@ workflows:
             - slack-test-frontend
           type: approval
       - test-backend:
+          filters:
+            branches:
+              only: master
           requires: [pause-build-backend]
       - slack-test-backend:
           context: SLACK_APP
@@ -430,8 +442,14 @@ workflows:
             - slack-test-backend
           type: approval
       - scan-backend:
+          filters:
+            branches:
+              only: master
           requires: [build-backend]
       - scan-frontend:
+          filters:
+            branches:
+              only: master
           requires: [build-frontend]
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
