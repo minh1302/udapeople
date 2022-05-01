@@ -41,7 +41,7 @@ commands:
           name: Destroy backend & frontend environments
           when: on_fail
           command: |
-            yum install unzip
+            apt install unzip
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             ./aws/install -y
@@ -254,6 +254,7 @@ jobs:
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> ~/inventory.txt
+            cat ~/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
