@@ -41,10 +41,7 @@ commands:
           name: Destroy backend & frontend environments
           when: on_fail
           command: |
-            apt install unzip
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            ./aws/install -y
+            apk add --no-cache aws-cli
             aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.id>>
             aws s3 rb s3://udapeople-<<parameters.id>> --force  
             aws cloudformation delete-stack --stack-name udapeople-prontend-<<parameters.id>>
