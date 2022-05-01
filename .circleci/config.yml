@@ -40,10 +40,19 @@ commands:
       - run:
           name: Destroy backend & frontend environments
           when: on_fail
+          
           # apk add --no-cache python3 py3-pip
           command: |
-            apt-get add python3 py3-pip
+            apt-get update
+            apt-get install -y
+            apt-get install -y \
+              python3 \
+              python3-pip \
+              python3-setuptools \
+              groff \
+              less \
             pip3 install --upgrade pip
+            apt-get clean
             pip3 install --no-cache-dir awscli
             rm -rf /var/cache/apk/*
             aws --version
@@ -328,6 +337,8 @@ jobs:
           # Run and save the migration output
           command: |
             cd backend
+            npm cache clean --force
+            rm -rf node_modules
             npm install            
             npm audit fix --audit-level=critical --force
             npm audit fix --force
