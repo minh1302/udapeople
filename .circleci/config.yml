@@ -1,5 +1,7 @@
 version: 2.1
 
+orbs: 
+  slack: circleci/slack@4.9.4
 # commands:
 #   destroy-environment:
 #     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -50,6 +52,14 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
 
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+
   build-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -66,6 +76,15 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+          
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
   test-frontend:
     docker:
@@ -83,6 +102,15 @@ jobs:
             cd frontend
             npm install
             npm run test
+          
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+          
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
                 
   test-backend:
     docker:
@@ -100,6 +128,15 @@ jobs:
             cd backend
             npm install
             npm run test
+          
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+          
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
             
   scan-frontend:
     docker:
@@ -119,6 +156,15 @@ jobs:
             npm install oauth-sign@^0.9.0
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
+          
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+          
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
   scan-backend:
     docker:
@@ -138,6 +184,15 @@ jobs:
             npm install oauth-sign@^0.9.0
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
+          
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+          
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
 #   deploy-infrastructure:
 #     docker:
@@ -309,11 +364,71 @@ workflows:
   default:
     jobs:
       - build-frontend
+      - slack/on-hold:
+          context: SLACK_APP
+          filters:
+            tags:
+              only: /^v.*/
+          requires:
+            - build-frontend
+      - pause_frontend:
+          filters:
+            tags:
+              only: /^v.*/
+          requires:
+            - build-frontend
+            - slack/on-hold
+          type: approval
       - build-backend
+      - slack/on-hold:
+          context: SLACK_APP
+          filters:
+            tags:
+              only: /^v.*/
+          requires:
+            - build-backend
+      - pause_backend:
+          filters:
+            tags:
+              only: /^v.*/
+          requires:
+            - build-backend
+            - slack/on-hold
+          type: approval
       - test-frontend:
-          requires: [build-frontend]
+          requires: [pause_frontend]
+      - slack/on-hold:
+          context: SLACK_APP
+          filters:
+            tags:
+              only: /^v.*/
+          requires:
+            - test-frontend
+      - pause_frontend:
+          filters:
+            tags:
+              only: /^v.*/
+          requires:
+            - test-frontend
+            - slack/on-hold
+          type: approval
       - test-backend:
-          requires: [build-backend]
+          requires: [pause_backend]
+      - slack/on-hold:
+          context: SLACK_APP
+          filters:
+            tags:
+              only: /^v.*/
+          requires:
+            - test-backend
+      - pause_frontend:
+          filters:
+            tags:
+              only: /^v.*/
+          requires:
+            - test-backend
+            - slack/on-hold
+          type: approval
       - scan-backend:
           requires: [build-backend]
       - scan-frontend:
