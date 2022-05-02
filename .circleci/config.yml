@@ -332,7 +332,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk install --no-cache-dir awscli
+            apt-get install --no-cache-dir awscli
 
       - run:
           name: Run migrations
