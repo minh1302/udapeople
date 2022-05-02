@@ -24,6 +24,7 @@
       yum:
         name: python2
         state: present
+      # raw: test -e /usr/bin/python2 || (yum -y update && yum install -y python2)
       changed_when: false
 
   # Get the environment variables from CircleCI and add to the EC2 instance
