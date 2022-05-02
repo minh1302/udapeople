@@ -72,6 +72,7 @@ commands:
           
           # apk add --no-cache python3 py3-pip
           command: |
+            sudo add-apt-repository universe
             sudo apt-get update
             sudo apt-get install -y
             sudo apt-get install -y \
@@ -395,34 +396,51 @@ jobs:
       - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-      - clean-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"       
+      # - clean-environment:
+      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"       
 
       - slack/notify:
           channel: general
           event: fail
           template: basic_fail_1 
 
-#   deploy-frontend:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Get backend url
-#           command: |
-#             # your code here
-#             export API_URL="http://${BACKEND_IP}:3030"
-#             echo "${API_URL}"
-#       - run:
-#           name: Deploy frontend objects
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure      
+  deploy-frontend:
+    docker:
+      # Docker image here that supports AWS CLI
+      - image: amazon/aws-cli
+    steps:
+      # Checkout code from git
+      - checkout
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            yum -y install tar gzip
+            apk add --update ansible 
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(cat ~/inventory.txt)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
+
+      # Here's where you will add some code to rollback on failure  
+      - remove-infrastructure:
+          context: SLACK_APP
+          requires: [run-migrations]    
                     
 #   deploy-backend:
 #     docker:
@@ -440,6 +458,9 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure  
+      # - remove-infrastructure:
+      #     context: SLACK_APP
+      #     requires: [run-migrations]
 
 #   smoke-test:
 #     docker:
@@ -463,6 +484,9 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure  
+      # - remove-infrastructure:
+      #     context: SLACK_APP
+      #     requires: [run-migrations]
 
 #   cloudfront-update:
 #     docker:
@@ -478,6 +502,9 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure  
+      # - remove-infrastructure:
+      #     context: SLACK_APP
+      #     requires: [run-migrations]
 
 # cleanup:
 #     docker:
@@ -539,7 +566,7 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           context: SLACK_APP
-          # requires: [configure-infrastructure]
+          requires: [configure-infrastructure]
       # - deploy-frontend:
       #     requires: [run-migrations]
       # - deploy-backend:
