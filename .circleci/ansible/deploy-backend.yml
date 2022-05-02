@@ -1,6 +1,6 @@
 ---
 
-- name: "deploy backend play." 
+- name: "configuration play." 
   hosts: web
   user: "ubuntu"
   become: true
@@ -13,7 +13,7 @@
     - ansible_stdout_callback: yaml
 
   pre_tasks:
-    - name: wait for target connection to become reachable/usable.
+    - name: "wait for target connection to become reachable/usable."
       # Your code here
       wait_for_connection:
         delay: 60
