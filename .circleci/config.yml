@@ -336,7 +336,7 @@ jobs:
             pip3 install --no-cache-dir awscli
             pip3 install nodejs
             pip3 install npm
-            pip install build-essential
+            sudo pip install build-essential
 
       - run:
           name: Run migrations
@@ -389,7 +389,7 @@ jobs:
             pip3 install --no-cache-dir awscli
             pip3 install nodejs
             pip3 install npm
-            pip install build-essential
+            sudo pip install build-essential
 
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
@@ -447,7 +447,7 @@ jobs:
             pip3 install --no-cache-dir awscli
             pip3 install nodejs
             pip3 install npm
-            pip install build-essential
+            sudo pip install build-essential
       - run:
           name: Deploy backend
           command: |
