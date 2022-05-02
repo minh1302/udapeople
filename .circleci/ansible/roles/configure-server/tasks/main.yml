@@ -1,12 +1,12 @@
 ---
 - name: "upgrade packages."
-    shell: |
-      yum upgrade
+  shell: |
+    yum -y upgrade
 
 - name: "install dependencies"
-    shell: |
-      yum install nodejs npm
+  shell: |
+    yum install -y nodejs npm
 
 - name: "install pm2"
-    shell: |
-      yum install pm2
+  shell: |
+    yum install -y pm2
