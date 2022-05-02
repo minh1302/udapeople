@@ -545,4 +545,4 @@ workflows:
       #     requires: [cloudfront-update]
       - remove-test-environment:
           context: SLACK_APP
-          requires: [deploy-backend]
+          requires: [deploy-frontend]
