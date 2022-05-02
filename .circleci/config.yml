@@ -408,14 +408,16 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: ~/
       - run:
           name: Install dependencies
           command: |
             yum -y install tar gzip
             apk add --update ansible 
+
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ~/
+          
       - run:
           name: Get backend url
           command: |
