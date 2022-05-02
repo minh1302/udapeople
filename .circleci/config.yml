@@ -30,7 +30,7 @@ commands:
             aws s3 rb s3://udapeople-<<parameters.id>> --force  
             aws cloudformation delete-stack --stack-name udapeople-prontend-<<parameters.id>>
             
-  destroy-environment:
+  destroy-environment-awscli:
     description: Destroy back-end & frontend cloudformation stacks given a workflow ID.
     parameters:
       id:
@@ -39,22 +39,22 @@ commands:
     steps:
       - run:
           name: Destroy backend & frontend environments
-          when: on_fail
+          when: on_fail         
           
-          # apk add --no-cache python3 py3-pip
+            # sudo apt-get update
+            # sudo apt-get install -y
+            # sudo apt-get install -y \
+            #   python3 \
+            #   python3-pip \
+            #   python3-setuptools \
+            #   groff \
+            #   less \
           command: |
-            sudo apt-get update
-            sudo apt-get install -y
-            sudo apt-get install -y \
-              python3 \
-              python3-pip \
-              python3-setuptools \
-              groff \
-              less \
-            sudo pip3 install --upgrade pip
-            sudo apt-get clean
-            sudo pip3 install --no-cache-dir awscli
-            sudo rm -rf /var/cache/apk/*
+            apk add --no-cache python3 py3-pip
+            pip3 install --upgrade pip
+            apt-get clean
+            pip3 install --no-cache-dir awscli
+            rm -rf /var/cache/apk/*
             aws --version
             aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.id>>
             aws s3 rb s3://udapeople-<<parameters.id>> --force  
@@ -318,7 +318,7 @@ jobs:
             - inventory.txt  
 
       # Here's where you will add some code to rollback on failure  
-      - destroy-environment:
+      - destroy-environment-awscli:
           id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
@@ -355,7 +355,7 @@ jobs:
             ansible-playbook -i ~/inventory.txt .circleci/ansible/configure-server.yml 
       
       # Here's where you will add some code to rollback on failure  
-      - destroy-environment:
+      - destroy-environment-awscli:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"     
 
       - slack/notify:
@@ -393,7 +393,7 @@ jobs:
             fi
 
      # Here's where you will add some code to rollback on failure   
-      - destroy-environment:
+      - destroy-environment-awscli:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"     
 
       - slack/notify:
@@ -412,12 +412,11 @@ jobs:
           name: Install dependencies
           command: |
             yum -y install tar gzip
-            apk add --update ansible 
 
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
           at: ~/
-          
+
       - run:
           name: Get backend url
           command: |
@@ -437,7 +436,7 @@ jobs:
             echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
 
       # Here's where you will add some code to rollback on failure
-      - destroy-environment:
+      - destroy-environment-awscli:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - clean-environment:
@@ -464,7 +463,7 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure   
-      # - destroy-environment:
+      # - destroy-environment-awscli:
       #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
       # - slack/notify:
       #     channel: general
@@ -493,7 +492,7 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure   
-      # - destroy-environment:
+      # - destroy-environment-awscli:
       #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
       # - remove-infrastructure:
       #     context: SLACK_APP
@@ -513,7 +512,7 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure  
-      # - destroy-environment:
+      # - destroy-environment-awscli:
       #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
       # - remove-infrastructure:
       #     context: SLACK_APP
