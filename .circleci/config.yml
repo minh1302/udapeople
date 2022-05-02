@@ -82,7 +82,7 @@ commands:
 jobs:
   build-frontend:
     docker:
-      - image: dainiax/aws-ansible-node-serverless
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -104,7 +104,7 @@ jobs:
 
   build-backend:
     docker:
-      - image: dainiax/aws-ansible-node-serverless
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -126,7 +126,7 @@ jobs:
 
   test-frontend:
     docker:
-      - image: dainiax/aws-ansible-node-serverless
+      - image: circleci/node:13.8.0
     steps:
       # Checkout code from git
       - checkout
@@ -148,7 +148,7 @@ jobs:
                 
   test-backend:
     docker:
-      - image: dainiax/aws-ansible-node-serverless
+      - image: circleci/node:13.8.0
     steps:
       # Checkout code from git
       - checkout
@@ -170,7 +170,7 @@ jobs:
             
   scan-frontend:
     docker:
-      - image: dainiax/aws-ansible-node-serverless
+      - image: circleci/node:13.8.0
     steps:
       # Checkout code from git
       - checkout
@@ -195,7 +195,7 @@ jobs:
 
   scan-backend:
     docker:
-      - image: dainiax/aws-ansible-node-serverless
+      - image: circleci/node:13.8.0
     steps:
       # Checkout code from git
       - checkout
@@ -295,7 +295,8 @@ jobs:
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
           at: ~/
-
+          
+      # Install dependencies
       - run:
           name: Install dependencies
           command: |
@@ -320,7 +321,13 @@ jobs:
   run-migrations:
     docker:
       # Docker image here that supports NodeJS
-      - image: dainiax/aws-ansible-node-serverless
+      - image: python:3.7-alpine3.11
+      
+      - run:
+          name: Install dependencies
+          command: |
+            pip3 install nodejs
+            pip3 install --no-cache-dir awscli
     steps:
       # Checkout code from git
       - checkout
@@ -358,7 +365,7 @@ jobs:
   deploy-frontend:
     docker:
       # Docker image here that supports AWS CLI
-      - image: dainiax/aws-ansible-node-serverless
+      - image: python:3.7-alpine3.11
     steps:
       # Checkout code from git
       - checkout
@@ -366,6 +373,13 @@ jobs:
       #     name: Install dependencies
       #     command: |
       #       apk -y install tar gzip
+          
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            pip3 install nodejs
+            pip3 install --no-cache-dir awscli
 
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
@@ -398,24 +412,43 @@ jobs:
           event: fail
           template: basic_fail_1
 
-  # deploy-backend:
-  #   docker:
-  #     # Docker image here that supports Ansible
-  #   steps:
-  #     # Checkout code from git
-  #     # Add ssh keys with fingerprint
-  #     # attach workspace
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # your code here
-  #     - run:
-  #         name: Deploy backend
-  #         command: |
-  #           # your code here
-  #     # Here's where you will add some code to rollback on failure   
-  #     - destroy-environment:
-  #         id: "${CIRCLE_WORKFLOW_ID:0:7}"
+  deploy-backend:
+    docker:
+      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+      
+      # Add ssh keys with fingerprint      
+      - add_ssh_keys:
+          fingerprints: ["01:76:a7:71:3d:69:fe:c4:bc:70:a1:ad:7a:3d:2a:71"] # You can get this ID in the section where you registered the SSH Key
+
+      # attach workspace
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ~/
+
+      - run:
+          name: Install dependencies
+          command: |
+            # install the dependencies needed for your playbook
+            apk add --update ansible 
+            pip3 install --no-cache-dir awscli
+      - run:
+          name: Deploy backend
+          command: |
+            cat ~/inventory.txt
+            ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml 
+      
+      # Here's where you will add some code to rollback on failure   
+      - destroy-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"    
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1     
 
   #     - slack/notify:
   #         channel: general
@@ -492,7 +525,7 @@ jobs:
 
   remove-test-environment:
     docker:
-      - image: dainiax/aws-ansible-node-serverless
+      - image: amazon/aws-cli
     steps:
       - destroy-test-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
