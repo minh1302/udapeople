@@ -261,6 +261,7 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
+            echo "[web]" > ~/inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> ~/inventory.txt
@@ -429,11 +430,6 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["01:76:a7:71:3d:69:fe:c4:bc:70:a1:ad:7a:3d:2a:71"] # You can get this ID in the section where you registered the SSH Key
 
-      # attach workspace
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: ~/
-
       # Install dependencies
       - run:
           name: Install dependencies
@@ -453,14 +449,16 @@ jobs:
             tar -C backend -czvf artifact.tar.gz .
             echo "tar $PWD/artifact.tar.gz"
             
+            echo "[web]" > ~/inventory.txt
+
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> .circleci/ansible/inventory.txt
+              --output text >> ~/inventory.txt
 
             echo "Contents  of the inventory.txt file is -------"
-            cat .circleci/ansible/inventory.txt
+            cat ~/inventory.txt
 
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+            ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
       
       # Here's where you will add some code to rollback on failure   
       - destroy-environment:
