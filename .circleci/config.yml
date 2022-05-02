@@ -578,11 +578,11 @@ workflows:
       - run-migrations:
           context: SLACK_APP
           requires: [configure-infrastructure]
-      - deploy-frontend:
-          context: SLACK_APP
-          requires: [run-migrations]
-      # - deploy-backend:
+      # - deploy-frontend:
+      #     context: SLACK_APP
       #     requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
@@ -591,4 +591,4 @@ workflows:
       #     requires: [cloudfront-update]
       - remove-test-environment:
           context: SLACK_APP
-          requires: [deploy-frontend]
+          requires: [deploy-backend]
