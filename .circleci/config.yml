@@ -404,7 +404,7 @@ jobs:
   deploy-frontend:
     docker:
       # Docker image here that supports AWS CLI
-      - image: amazon/aws-cli
+      - image: sleavely/node-awscli:14.x
     steps:
       # Checkout code from git
       - checkout
