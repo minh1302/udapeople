@@ -4,11 +4,9 @@
     dest: /workspace/project
     remote_src: True
 
-- name: Print env variable
+- name: npm install and start
     shell: |
       cd /workspace/project/backend
       npm install
       pm2 stop default
       pm2 start npm -- start
-
-      exit 0
