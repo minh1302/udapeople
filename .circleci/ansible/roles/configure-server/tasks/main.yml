@@ -2,7 +2,7 @@
 - name: upgrade packages
   yum:
     name: '*'
-    state: lastest
+    state: latest
 
 - name: install nodejs
   yum:
