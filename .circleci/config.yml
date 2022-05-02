@@ -59,6 +59,37 @@ commands:
             aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.id>>
             aws s3 rb s3://udapeople-<<parameters.id>> --force  
             aws cloudformation delete-stack --stack-name udapeople-prontend-<<parameters.id>>
+  
+  clean-environment:
+    description: Destroy back-end & frontend cloudformation stacks given a workflow ID.
+    parameters:
+      id:
+        default: "ID"
+        type: string 
+    steps:
+      - run:
+          name: Destroy backend & frontend environments
+          
+          # apk add --no-cache python3 py3-pip
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y
+            sudo apt-get install -y \
+              python3 \
+              python3-pip \
+              python3-setuptools \
+              groff \
+              less \
+            sudo pip3 install --upgrade pip
+            sudo apt-get clean
+            sudo pip3 install --no-cache-dir awscli
+            sudo rm -rf /var/cache/apk/*
+            aws --version
+            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.id>>
+            aws s3 rb s3://udapeople-<<parameters.id>> --force  
+            aws cloudformation delete-stack --stack-name udapeople-prontend-<<parameters.id>>
+          
+                   
             
   remove-environment:
     description: Destroy back-end & frontend cloudformation stacks given a workflow ID.
@@ -73,6 +104,7 @@ commands:
             aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.id>>
             aws s3 rb s3://udapeople-<<parameters.id>> --force  
             aws cloudformation delete-stack --stack-name udapeople-prontend-<<parameters.id>>
+            
             
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
@@ -360,7 +392,10 @@ jobs:
             fi
      # Here's where you will add some code to rollback on failure   
       - destroy-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"    
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
+      - clean-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"       
 
       - slack/notify:
           channel: general
@@ -469,6 +504,10 @@ jobs:
     steps:
       - remove-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1
 workflows:
   default:
     jobs:
@@ -511,4 +550,5 @@ workflows:
       # - cleanup:
       #     requires: [cloudfront-update]
       - remove-infrastructure:
+          context: SLACK_APP
           requires: [run-migrations]
