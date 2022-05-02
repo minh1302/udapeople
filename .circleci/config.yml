@@ -437,10 +437,14 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
 
-      # Here's where you will add some code to rollback on failure  
-      - remove-infrastructure:
-          context: SLACK_APP
-          requires: [run-migrations]    
+      # Here's where you will add some code to rollback on failure
+      - destroy-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1
                     
 #   deploy-backend:
 #     docker:
@@ -457,10 +461,13 @@ jobs:
 #           name: Deploy backend
 #           command: |
 #             # your code here
-#       # Here's where you will add some code to rollback on failure  
-      # - remove-infrastructure:
-      #     context: SLACK_APP
-      #     requires: [run-migrations]
+#       # Here's where you will add some code to rollback on failure   
+      # - destroy-environment:
+      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      # - slack/notify:
+      #     channel: general
+      #     event: fail
+      #     template: basic_fail_1
 
 #   smoke-test:
 #     docker:
@@ -483,7 +490,9 @@ jobs:
 #           name: Frontend smoke test.
 #           command: |
 #             # your code here
-#       # Here's where you will add some code to rollback on failure  
+#       # Here's where you will add some code to rollback on failure   
+      # - destroy-environment:
+      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
       # - remove-infrastructure:
       #     context: SLACK_APP
       #     requires: [run-migrations]
@@ -502,6 +511,8 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure  
+      # - destroy-environment:
+      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
       # - remove-infrastructure:
       #     context: SLACK_APP
       #     requires: [run-migrations]
