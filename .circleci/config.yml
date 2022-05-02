@@ -454,7 +454,7 @@ jobs:
             echo "tar $PWD/artifact.tar.gz"
             echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
-            ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
+          # ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
       
       # Here's where you will add some code to rollback on failure   
       - destroy-environment:
@@ -568,28 +568,32 @@ workflows:
       # - scan-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
-      - deploy-infrastructure:
-          context: SLACK_APP
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [test-feature-branch]
-      - configure-infrastructure:
-          context: SLACK_APP
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          context: SLACK_APP
-          requires: [configure-infrastructure]
+      # - deploy-infrastructure:
+      #     context: SLACK_APP
+      #     # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [test-feature-branch]
+      # - configure-infrastructure:
+      #     context: SLACK_APP
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     context: SLACK_APP
+      #     requires: [configure-infrastructure]
       # - deploy-frontend:
       #     context: SLACK_APP
       #     requires: [run-migrations]
       - deploy-backend:
+          context: SLACK_APP
           requires: [run-migrations]
       # - smoke-test:
+          # context: SLACK_APP
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
+          # context: SLACK_APP
       #     requires: [smoke-test]
       # - cleanup:
+          # context: SLACK_APP
       #     requires: [cloudfront-update]
       - remove-test-environment:
           context: SLACK_APP
