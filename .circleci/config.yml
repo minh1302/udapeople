@@ -226,14 +226,14 @@ jobs:
   deploy-infrastructure:
     docker:
       # Docker image here that supports AWS CLI
-      - image: dainiax/aws-ansible-node-serverless
+      - image: amazon/aws-cli
     steps:
       # Checkout code from git
       - checkout
-      # - run:
-      #     name: install tar gzip
-      #     command: |
-      #       yum -y install tar gzip
+      - run:
+          name: install tar gzip
+          command: |
+            yum -y install tar gzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
