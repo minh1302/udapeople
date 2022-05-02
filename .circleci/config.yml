@@ -323,14 +323,18 @@ jobs:
       # Docker image here that supports NodeJS
       - image: python:3.7-alpine3.11
       
+      
+    steps:
+      # Checkout code from git
+      - checkout
+
+      # Install dependencies
       - run:
           name: Install dependencies
           command: |
             pip3 install nodejs
             pip3 install --no-cache-dir awscli
-    steps:
-      # Checkout code from git
-      - checkout
+
       - run:
           name: Run migrations
           # Run and save the migration output
@@ -400,6 +404,7 @@ jobs:
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            echo "tar $PWD/artifact-${CIRCLE_WORKFLOW_ID:0:7}.tar.gz"
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
 
@@ -438,8 +443,16 @@ jobs:
       - run:
           name: Deploy backend
           command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            
+            tar -C backend -czvf artifact.tar.gz .
+            echo "tar $PWD/artifact.tar.gz"
+            echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
-            ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml 
+            ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
       
       # Here's where you will add some code to rollback on failure   
       - destroy-environment:
