@@ -307,9 +307,9 @@ jobs:
             pip3 install --no-cache-dir awscli
       - run:
           name: Configure server
+          # echo "[web]" > ~/inventory.txt
+          # echo "ec2-54-234-161-164.compute-1.amazonaws.com" >> ~/inventory.txt
           command: |
-            echo "[web]" > ~/inventory.txt
-            echo "ec2-54-234-161-164.compute-1.amazonaws.com" >> ~/inventory.txt
             cat ~/inventory.txt
             ansible-playbook -i ~/inventory.txt .circleci/ansible/configure-server.yml 
       
