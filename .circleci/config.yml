@@ -445,7 +445,7 @@ jobs:
           channel: general
           event: fail
           template: basic_fail_1
-                              
+
 #   deploy-backend:
 #     docker:
 #       # Docker image here that supports Ansible
@@ -578,8 +578,8 @@ workflows:
       - run-migrations:
           context: SLACK_APP
           requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
       # - smoke-test:
