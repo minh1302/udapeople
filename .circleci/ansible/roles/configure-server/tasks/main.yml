@@ -1,12 +1,20 @@
 ---
-- name: "upgrade packages."
-  shell: |
-    yum -y upgrade
+- name: upgrade packages
+  yum:
+    name: upgrade
+    state: lastest
 
-- name: "install dependencies"
-  shell: |
-    yum install -y nodejs npm
+- name: install nodejs
+  yum:
+    name: nodejs
+    state: present
 
-- name: "install pm2"
-  shell: |
-    yum install -y pm2
+- name: install npm
+  yum:
+    name: npm
+    state: present
+
+- name: install pm2
+  yum:
+    name: pm2
+    state: present
