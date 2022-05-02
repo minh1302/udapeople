@@ -460,7 +460,7 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat .circleci/ansible/inventory.txt
 
-          ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       
       # Here's where you will add some code to rollback on failure   
       - destroy-environment:
