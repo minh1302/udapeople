@@ -337,7 +337,7 @@ jobs:
             pip3 install --no-cache-dir awscli
             pip3 install nodejs
             pip3 install npm
-            sudo pip install build-essential
+            pip install build-essential
 
       - run:
           name: Run migrations
