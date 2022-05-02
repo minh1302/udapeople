@@ -92,7 +92,7 @@ commands:
           
                    
             
-  remove-environment:
+  destroy-environment:
     description: Destroy back-end & frontend cloudformation stacks given a workflow ID.
     parameters:
       id:
@@ -411,7 +411,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum -y install tar gzip
+            apk -y install tar gzip
 
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
@@ -436,11 +436,11 @@ jobs:
             echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
 
       # Here's where you will add some code to rollback on failure
-      - destroy-environment-awscli:
+      - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-      - clean-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+      # - clean-environment:
+      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"  
 
       - slack/notify:
           channel: general
@@ -542,7 +542,7 @@ jobs:
       # Docker image here that supports AWS CLI
       - image: amazon/aws-cli
     steps:
-      - remove-environment:
+      - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - slack/notify:
           channel: general
