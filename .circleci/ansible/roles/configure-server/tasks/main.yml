@@ -1,20 +1,21 @@
 ---
-- name: upgrade packages
-  yum:
-    name: '*'
+   
+- name: "upgrade packages."
+  become: true
+  apt:
+    upgrade: "yes"
+
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["nodejs", "npm"]
     state: latest
+    update_cache: yes
 
-- name: install nodejs
-  yum:
-    name: https://nodejs.org/dist/v13.8.0/node-v13.8.0.pkg
-    state: present
-
-- name: install npm
-  yum:
-    name: npm
-    state: present
-
-- name: install pm2
-  yum:
+- name: "install pm2"
+  become: true
+  npm:
     name: pm2
+    global: yes
+    production: yes
     state: present
