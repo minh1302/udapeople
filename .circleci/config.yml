@@ -290,7 +290,7 @@ jobs:
 
       # Add ssh keys with fingerprint      
       - add_ssh_keys:
-          fingerprints: ["20:97:9a:77:19:0e:95:09:d6:70:11:d4:15:6d:c8:f7"] 
+          fingerprints: ["45:8b:60:3b:68:26:7f:2e:f1:88:e2:35:96:1d:14:73"] 
           # You can get this ID in the section where you registered the SSH Key
 
       # attach workspace
@@ -429,7 +429,7 @@ jobs:
       
       # Add ssh keys with fingerprint      
       - add_ssh_keys:
-          fingerprints: ["20:97:9a:77:19:0e:95:09:d6:70:11:d4:15:6d:c8:f7"] 
+          fingerprints: ["45:8b:60:3b:68:26:7f:2e:f1:88:e2:35:96:1d:14:73"] 
           # You can get this ID in the section where you registered the SSH Key
 
       # Install dependencies
