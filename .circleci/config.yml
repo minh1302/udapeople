@@ -332,6 +332,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            USER root
+            pip install sudo
             pip install --upgrade pip
             pip3 install --no-cache-dir awscli
             pip3 install nodejs
