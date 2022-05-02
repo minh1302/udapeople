@@ -6,7 +6,7 @@
 
 - name: install nodejs
   yum:
-    name: nodejs
+    name: https://nodejs.org/dist/v13.8.0/node-v13.8.0.pkg
     state: present
 
 - name: install npm
