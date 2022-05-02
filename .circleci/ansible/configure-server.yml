@@ -8,7 +8,7 @@
   become_user: root  
   gather_facts: false
   vars:
-    - ansible_python_interpreter: /usr/bin/python3
+    - ansible_python_interpreter: /usr/bin/python2
     - ansible_host_key_checking: false
     - ansible_stdout_callback: yaml
 
@@ -22,7 +22,7 @@
       # Your code here
       become: true
       yum:
-        name: python3
+        name: python2
         state: present
       changed_when: false
 
