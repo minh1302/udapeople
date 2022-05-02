@@ -263,12 +263,12 @@ jobs:
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> ~/inventory.txt
-            cat ~/inventory.txt
+              --output text >> .circleci\ansible\inventory.txt
+            cat .circleci\ansible\inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
-            - inventory.txt  
+            - .circleci\ansible\inventory.txt  
 
       # Here's where you will add some code to rollback on failure  
       - destroy-environment:
@@ -452,9 +452,15 @@ jobs:
             
             tar -C backend -czvf artifact.tar.gz .
             echo "tar $PWD/artifact.tar.gz"
+            
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text >> .circleci/ansible/inventory.txt
+
             echo "Contents  of the inventory.txt file is -------"
-            cat ~/inventory.txt
-          # ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
+            cat .circleci/ansible/inventory.txt
+
+          ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       
       # Here's where you will add some code to rollback on failure   
       - destroy-environment:
@@ -568,21 +574,21 @@ workflows:
       # - scan-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     context: SLACK_APP
-      #     # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [test-feature-branch]
-      # - configure-infrastructure:
-      #     context: SLACK_APP
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     context: SLACK_APP
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     context: SLACK_APP
-      #     requires: [run-migrations]
+      - deploy-infrastructure:
+          context: SLACK_APP
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [test-feature-branch]
+      - configure-infrastructure:
+          context: SLACK_APP
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          context: SLACK_APP
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          context: SLACK_APP
+          requires: [run-migrations]
       - deploy-backend:
           context: SLACK_APP
           # requires: [run-migrations]
