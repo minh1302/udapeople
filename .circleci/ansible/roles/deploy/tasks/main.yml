@@ -1,5 +1,6 @@
 ---
 - name: Unarchive artifact.tar.gz to EC2
+  unarchive:
     src: /workspace/project
     dest: /workspace/project
     remote_src: True
