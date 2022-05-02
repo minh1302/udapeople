@@ -321,7 +321,7 @@ jobs:
   run-migrations:
     docker:
       # Docker image here that supports NodeJS
-      - image: python:3.7-alpine3.11
+      - image: circleci/node:13.8.0
       
       
     steps:
@@ -332,12 +332,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            pip install sudo
-            pip install --upgrade pip
-            pip3 install --no-cache-dir awscli
-            pip3 install nodejs
-            pip3 install npm
-            pip install build-essential
+            apk install --no-cache-dir awscli
 
       - run:
           name: Run migrations
