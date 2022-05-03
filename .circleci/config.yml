@@ -440,7 +440,8 @@ jobs:
             sudo apt-get -y install python3-pip
             sudo pip3 install --no-cache-dir awscli
             sudo apt-get install ansible 
-            sudo apt-get update ansible 
+            sudo apt-get update
+            sudo apt-get dist-upgrade
             
       - run:
           name: Deploy backend
