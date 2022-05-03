@@ -524,7 +524,7 @@ jobs:
             BACKEND_IP=$(cat ~/ip.txt)
             export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
             echo "${STATUS_URL}" > ~/statusURL.txt
-            chmod ~/statusURL.txt
+            chmod 777 ~/statusURL.txt
             cat ~/statusURL.txt
 
       - run:
