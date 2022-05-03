@@ -8,10 +8,6 @@
   become_user: root  
   gather_facts: false
 
-  roles:
-    # Your code here
-    - deploy
-    
   vars:
     - ansible_python_interpreter: /usr/bin/python3
     - ansible_host_key_checking: false
@@ -20,5 +16,8 @@
   pre_tasks :
   - name: wait for target connection to become reachable/usable.
     wait_for_connection:
-      delay: 1
       timeout: 300
+
+  roles:
+    # Your code here
+    - deploy
