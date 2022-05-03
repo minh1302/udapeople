@@ -655,8 +655,6 @@ jobs:
             # pm2 stop default
             pm2 start npm -- start
 
-            cat ~/migrations_dump.txt
-
       # Send migration status to kvdb.io
       - run:
           name: check status backend
@@ -698,13 +696,13 @@ workflows:
       # - deploy-frontend:
       #     context: SLACK_APP
       #     requires: [run-migrations]
-      - deploy-backend:
-          context: SLACK_APP
-          # requires: [run-migrations]
-      - smoke-test:
-          context: SLACK_APP
-          # requires: [deploy-backend, deploy-frontend]
-          requires: [deploy-backend]
+      # - deploy-backend:
+      #     context: SLACK_APP
+      #     # requires: [run-migrations]
+      # - smoke-test:
+      #     context: SLACK_APP
+      #     # requires: [deploy-backend, deploy-frontend]
+      #     requires: [deploy-backend]
       # - cloudfront-update:
           # context: SLACK_APP
       #     requires: [smoke-test]
