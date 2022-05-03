@@ -521,7 +521,7 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicDnsName' \
               --output text >> /root/project/ip.txt
 
-            BACKEND_IP=cat /tmp/ip.txt
+            BACKEND_IP=cat /root/project/ip.txt
             export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
             echo "${STATUS_URL}" > /root/project/statusURL.txt
             cat /root/project/statusURL.txt
