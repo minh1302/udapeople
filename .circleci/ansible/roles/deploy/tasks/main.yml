@@ -3,8 +3,8 @@
 - name: create folders
   shell: |
     cd /home/{{ ansible_user }}
-    mkdir compressed
-    mkdir extracted
+    mkdir -p compressed
+    mkdir -p extracted
 
 - name: Copy files before extracting
   copy:
@@ -14,7 +14,7 @@
 - name: Extract found files into destination
   unarchive:
     src: "/home/{{ ansible_user }}/compressed/artifact.tar.gz"
-    dest: "/home/{{ ansible_user }}/extracted"
+    dest: "/home/{{ ansible_user }}/extracted/"
     remote_src: yes
 
 - name: npm install and start
