@@ -519,10 +519,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            aws ec2 describe-instances \
-                --query 'Reservations[*].Instances[*].PublicDnsName' \
-                --output text > inventory.txt
-            BACKEND_IP=cat inventory.txt
+            BACKEND_IP=aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' --output text
             export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
             echo "${STATUS_URL}" > statusURL.txt
             cat statusURL.txt
