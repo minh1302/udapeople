@@ -521,18 +521,16 @@ jobs:
           command: |
             aws ec2 describe-instances \
                 --query 'Reservations[*].Instances[*].PublicDnsName' \
-                --output text > ~/inventory.txt
-            BACKEND_IP=cat ~/inventory.txt
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL = ${API_URL}"
-            export STATUS_URL="${API_URL}/api/status"
-            echo "${STATUS_URL}" > ~/statusURL.txt
-            cat ~/statusURL.txt
+                --output text > inventory.txt
+            BACKEND_IP=cat inventory.txt
+            export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
+            echo "${STATUS_URL}" > statusURL.txt
+            cat statusURL.txt
 
       - run:
           name: Backend smoke test.
           command: |
-            export STATUS_URL=$(cat ~/statusURL.txt)
+            export STATUS_URL=cat statusURL.txt
 
             if curl "${STATUS_URL}" | grep "ok"
             then
