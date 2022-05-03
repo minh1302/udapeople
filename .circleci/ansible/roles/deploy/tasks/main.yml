@@ -2,7 +2,7 @@
 
 - name: Copy files before extracting
   copy:
-    src: "/srv/tmp/artifact.tar.gz"
+    src: "/tmp/artifact.tar.gz"
     dest: "/home/{{ ansible_user }}/compressed"
 
 - name: Extract found files into destination
