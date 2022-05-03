@@ -450,11 +450,9 @@ jobs:
             # cd ..
             
             tar -C backend -czvf artifact.tar.gz .
-            echo "tar $PWD/artifact.tar.gz"
+            echo $PWD
             
             echo "[web]" > ~/inventory.txt
-            # echo "ec2-18-206-176-125.compute-1.amazonaws.com" >> ~/inventory.txt
-
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicDnsName' \
               --output text >> ~/inventory.txt

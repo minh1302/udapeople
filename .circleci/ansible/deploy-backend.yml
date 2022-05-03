@@ -18,7 +18,6 @@
       become: false
       shell: |
         ssh-keygen -F {{ inventory_hostname }} || ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts
-        ssh-add ~/.ssh/id_rsa
       register: known_hosts_script
       changed_when: "'found' not in known_hosts_script.stdout"
 
