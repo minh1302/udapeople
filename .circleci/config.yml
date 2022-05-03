@@ -376,16 +376,13 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       apk -y install tar gzip
           
       # Install dependencies
       - run:
           name: Install dependencies
           command: |
             sudo apt-get -y install python3-pip
+            sudo apt-get -y install tar gzip
             sudo pip3 install --no-cache-dir awscli
 
       - run:
