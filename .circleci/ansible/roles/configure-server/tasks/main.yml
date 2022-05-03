@@ -1,10 +1,9 @@
 ---
    
-- name: "update & upgrade packages."
+- name: "upgrade packages."
   become: true
-  shell: |
-    apt update
-    apt upgrade
+  apt:
+    upgrade: "yes"
 
 - name: "install dependencies."
   become: true
