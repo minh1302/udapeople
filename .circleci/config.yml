@@ -707,8 +707,8 @@ workflows:
           # requires: [run-migrations]
       - smoke-test:
           context: SLACK_APP
-          requires: [deploy-backend, deploy-frontend]
-          # requires: [deploy-backend]
+          # requires: [deploy-backend, deploy-frontend]
+          requires: [deploy-backend]
       # - cloudfront-update:
           # context: SLACK_APP
       #     requires: [smoke-test]
