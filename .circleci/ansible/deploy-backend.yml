@@ -12,15 +12,15 @@
     - ansible_host_key_checking: false
     - ansible_stdout_callback: yaml
 
-  pre_tasks:
-    - name: Accept EC2 SSH host keys
-      connection: local
-      become: true
-      shell: |
-        ssh-keygen -F {{ inventory_hostname }} || ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts
-        cat ~/.ssh/known_hosts
-      register: known_hosts_script
-      changed_when: "'found' not in known_hosts_script.stdout"
+  # pre_tasks:
+  #   - name: Accept EC2 SSH host keys
+  #     connection: local
+  #     become: true
+  #     shell: |
+  #       ssh-keygen -F {{ inventory_hostname }} || ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts
+  #       cat ~/.ssh/known_hosts
+  #     register: known_hosts_script
+  #     changed_when: "'found' not in known_hosts_script.stdout"
 
   roles:
     # Your code here
