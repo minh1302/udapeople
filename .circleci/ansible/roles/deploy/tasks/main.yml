@@ -5,12 +5,11 @@
     cd /home/{{ ansible_user }}
     mkdir compressed
     mkdir extracted
-    ls
 
 - name: Copy files before extracting
   copy:
     src: "/tmp/artifact.tar.gz"
-    dest: "/home/{{ ansible_user }}/compressed"/artifact.tar.gz
+    dest: "/home/{{ ansible_user }}/compressed/artifact.tar.gz"
 
 - name: Extract found files into destination
   unarchive:
