@@ -515,7 +515,7 @@ jobs:
             apk add --update npm 
             apk add --update curl
             pip3 install --no-cache-dir awscli
-            
+
       - run:
           name: Get backend url
           command: |
@@ -659,7 +659,7 @@ workflows:
       - smoke-test:
           context: SLACK_APP
           # requires: [deploy-backend, deploy-frontend]
-          requires: [deploy-backend]
+          # requires: [deploy-backend]
       # - cloudfront-update:
           # context: SLACK_APP
       #     requires: [smoke-test]
