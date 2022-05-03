@@ -451,7 +451,7 @@ jobs:
             # npm run build
             # cd ..
             
-            tar -C backend -czvf artifact.tar.gz .
+            tar -C backend -czvf /tmp/artifact.tar.gz .
             echo $PWD
             
             echo "[web]" > ~/inventory.txt

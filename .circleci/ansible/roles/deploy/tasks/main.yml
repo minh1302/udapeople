@@ -1,17 +1,35 @@
 ---
-- name: Unarchive artifact.tar.gz to EC2
-  become: true
+
+- name: Find file(s) for copy and extract, register the result
+  find:
+    paths: "/tmp"
+    pattern: "*.tar.gz"
+  register: result
+
+- name: Debug task to get comfortable with the data structure and filter
+  debug:
+    msg: "Full path: {{ item.path}}, basename: {{ item.path | basename }}"
+  loop: "{{ result.files }}"
+
+- name: Copy files before extracting
+  copy:
+    src: "/tmp/{{ item.path | basename }}"
+    dest: "/home/{{ ansible_user }}/compressed"
+    remote_src: yes
+
+- name: Extract found files into destination
   unarchive:
-    src: /workspace/project
-    dest: ~/
-    remote_src: True
+    src: "/home/{{ ansible_user }}/compressed/{{ item.path | basename }}"
+    dest: "/home/{{ ansible_user }}/extracted"
+    remote_src: yes
+  loop: "{{ result.files }}"
 
 - name: npm install and start
   become: true
   shell: |
-    cd ~/
+    cd /home/{{ ansible_user }}/extracted
     ls
-    cd ~/artifact
-    npm install
-    pm2 stop default
-    pm2 start npm -- start
+    
+    # npm install
+    # pm2 stop default
+    # pm2 start npm -- start
