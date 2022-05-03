@@ -7,7 +7,7 @@
 
 - name: Extract found files into destination
   unarchive:
-    src: "/tmp/artifact.tar.gz"
+    src: "/home/{{ ansible_user }}/compressed/artifact.tar.gz"
     dest: "/home/{{ ansible_user }}/extracted"
     remote_src: yes
 
