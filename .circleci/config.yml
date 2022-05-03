@@ -6,7 +6,7 @@ commands:
   destroy-backend-environment:
     description: Destroy back-end cloudformation stacks given a workflow ID.
     parameters:
-      id:
+      workflow_id:
         default: "ID"
         type: string 
     steps:
@@ -19,7 +19,7 @@ commands:
   destroy-frontend-environment:
     description: Destroy front-end cloudformation stacks given a workflow ID.
     parameters:
-      id:
+      workflow_id:
         default: "ID"
         type: string 
     steps:
@@ -33,7 +33,7 @@ commands:
   destroy-environment:
     description: Destroy back-end & frontend cloudformation stacks given a workflow ID.
     parameters:
-      id:
+      workflow_id:
         default: "ID"
         type: string 
     steps:
@@ -48,7 +48,7 @@ commands:
   destroy-test-environment:
     description: Destroy back-end & frontend cloudformation stacks given a workflow ID.
     parameters:
-      id:
+      workflow_id:
         default: "ID"
         type: string 
     steps:
@@ -60,24 +60,25 @@ commands:
             aws cloudformation delete-stack --stack-name udapeople-prontend-<<parameters.id>>
             
             
-#   revert-migrations:
-#     description: Revert the last migration if successfully run in the current workflow.
-#     parameters:
-#       # Add parameter here     
-#     steps:
-#       - run:
-#           name: Revert migrations
-#           # Add when this will run
-#           command: |
-#             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-#             SUCCESS = 1
-#             if(( $SUCCESS==1 )); 
-#             then
-#             #  cd ~/project/backend
-#             #  npm install
-#             #  Add revert code here. You can find this in the Getting Started section.
-#               exit 1
-#             fi
+  revert-migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    parameters:
+      workflow_id:
+        default: "ID"
+        type: string    
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            SUCCESS=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/migration_<< parameters.workflow_id >>)
+            # Logic for reverting the database state
+            if (( $SUCCESS == 1 ));
+            then
+                cd ~/project/backend
+                npm install
+                npm run migration:revert
+            fi  
             
 jobs:
   build-frontend:
@@ -244,7 +245,7 @@ jobs:
               --tags project=udapeople
 
       - destroy-backend-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - run:
           name: Ensure front-end infrastructure exist
@@ -256,7 +257,7 @@ jobs:
               --tags project=udapeople
 
       - destroy-frontend-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - run:
           name: Add back-end ip to ansible inventory
@@ -273,7 +274,10 @@ jobs:
 
       # Here's where you will add some code to rollback on failure  
       - destroy-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
           channel: general
@@ -315,7 +319,10 @@ jobs:
       
       # Here's where you will add some code to rollback on failure  
       - destroy-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"     
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
 
       - slack/notify:
           channel: general
@@ -346,15 +353,15 @@ jobs:
             npm cache clean --force
             rm -rf node_modules
             npm install        
-            npm run migrations --force > migrations_dump.txt
-            cat migrations_dump.txt
+            npm run migrations --force > ~/migrations_dump.txt
+            cat ~/migrations_dump.txt
 
       # Send migration status to kvdb.io
       - run:
           name: Send migration status to kvdb.io
           # If you are using kvdb.io, generate the bucket ID "Y2wgZLY8miMzxFRtpP8iEb" in your local terminal first
           command: |   
-            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            if grep -q "has been executed successfully." ~/migrations_dump.txt
             then
               curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/migration_${CIRCLE_WORKFLOW_ID:0:7}"  -d '1'
               curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/migration_${CIRCLE_WORKFLOW_ID:0:7}"
@@ -362,7 +369,10 @@ jobs:
 
      # Here's where you will add some code to rollback on failure   
       - destroy-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"     
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"       
+
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
           channel: general
@@ -403,14 +413,17 @@ jobs:
             cd frontend
             npm install
             npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist --totals
             echo "tar $PWD/artifact-${CIRCLE_WORKFLOW_ID:0:7}.tar.gz"
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
 
       # Here's where you will add some code to rollback on failure
-      # - destroy-environment:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
           channel: general
@@ -475,7 +488,10 @@ jobs:
       
       # Here's where you will add some code to rollback on failure   
       # - destroy-environment:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"    
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
+
+      # - revert-migrations:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
           channel: general
@@ -530,35 +546,46 @@ jobs:
             fi
       # # Here's where you will add some code to rollback on failure   
       # - destroy-environment:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      # - remove-infrastructure:
-      #     context: SLACK_APP
-      #     requires: [run-migrations]   
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+
+      # - revert-migrations:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
           channel: general
           event: fail
           template: basic_fail_1 
 
-#   cloudfront-update:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Update cloudfront distribution
-#           command: |
-#             # your code here
+  cloudfront-update:
+    docker:
+      # Docker image here that supports AWS CLI
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            apk add --update curl
+            pip3 install --no-cache-dir awscli
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            # Change the initial stack name, as applicable to you
+            aws cloudformation deploy \
+                    --template-file .circleci/files/cloudfront.yml \
+                    --stack-name InitialStack \
+                    --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+                    --tags project=udapeople
 #       # Here's where you will add some code to rollback on failure  
       # - destroy-environment:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      # - remove-infrastructure:
-      #     context: SLACK_APP
-      #     requires: [run-migrations]
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+
+      # - revert-migrations:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
 # cleanup:
 #     docker:
@@ -585,7 +612,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - destroy-test-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - slack/notify:
           channel: general
@@ -610,27 +637,28 @@ workflows:
       # - scan-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
-      - deploy-infrastructure:
-          context: SLACK_APP
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [test-feature-branch]
-      - configure-infrastructure:
-          context: SLACK_APP
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          context: SLACK_APP
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          context: SLACK_APP
-          requires: [run-migrations]
+      # - deploy-infrastructure:
+      #     context: SLACK_APP
+      #     # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [test-feature-branch]
+      # - configure-infrastructure:
+      #     context: SLACK_APP
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     context: SLACK_APP
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     context: SLACK_APP
+      #     requires: [run-migrations]
       - deploy-backend:
           context: SLACK_APP
-          requires: [run-migrations]
+          # requires: [run-migrations]
       - smoke-test:
           context: SLACK_APP
-          requires: [deploy-backend, deploy-frontend]
+          # requires: [deploy-backend, deploy-frontend]
+          requires: [deploy-backend]
       # - cloudfront-update:
           # context: SLACK_APP
       #     requires: [smoke-test]
