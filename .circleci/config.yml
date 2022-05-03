@@ -519,17 +519,17 @@ jobs:
           command: |          
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicDnsName' \
-              --output text >> /tmp/ip.txt
+              --output text >> /root/project/ip.txt
 
             BACKEND_IP=cat /tmp/ip.txt
             export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
-            echo "${STATUS_URL}" > /tmp/statusURL.txt
-            cat /tmp/statusURL.txt
+            echo "${STATUS_URL}" > /root/project/statusURL.txt
+            cat /root/project/statusURL.txt
 
       - run:
           name: Backend smoke test.
           command: |
-            STATUS_URL=cat /tmp/statusURL.txt
+            STATUS_URL=cat /root/project/statusURL.txt
 
             if curl "${STATUS_URL}" | grep "ok"
             then
