@@ -484,8 +484,8 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
             sudo sed -i 's/#host_key_checking = False/host_key_checking = False/g' /etc/ansible/ansible.cfg
-            sudo sed -i 's/# ssh arguments to use/ssh_args = -o ControlMaster=off/g' /etc/ansible/ansible.cfg
-
+            awk '{sub(/# ssh arguments to use/,"control_path = %(directory)s/%%C")}1' /etc/ansible/ansible.cfg
+            
             cat /etc/ansible/ansible.cfg
             ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
       
