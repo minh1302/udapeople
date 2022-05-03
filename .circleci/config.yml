@@ -488,7 +488,7 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
             EC2_IP=$(cat ~/EC2_IP.txt)
-            sudo ssh-keyscan -H "${EC2_IP}" >> ~/.ssh/known_hosts9
+            sudo ssh-keyscan -H "${EC2_IP}" >> ~/.ssh/known_hosts
 
             ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
       
