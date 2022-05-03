@@ -455,23 +455,23 @@ jobs:
             sudo apt-get -y install curl
             sudo pip3 install --no-cache-dir awscli
 
-      # - run:
-      #     name: Build & tar backend folder
-      #     command: |
-      #       cd backend
-      #       npm install
-      #       npm run build
-      #       cd ..
+      - run:
+          name: Build & tar backend folder
+          command: |
+            cd backend
+            npm install
+            npm run build
+            cd ..
             
-      #       tar -czvf /tmp/artifact.tar.gz backend --totals
+            tar -czvf /tmp/artifact.tar.gz backend --totals
 
-      #       FILE=/tmp/artifact.tar.gz
-      #       if [ -f "$FILE" ]; then
-      #           echo "$FILE exists."
-      #       else 
-      #           echo "$FILE does not exist."
-      #           exit 1
-      #       fi
+            FILE=/tmp/artifact.tar.gz
+            if [ -f "$FILE" ]; then
+                echo "$FILE exists."
+            else 
+                echo "$FILE does not exist."
+                exit 1
+            fi
 
       - run:
           name: Deploy backend
@@ -490,7 +490,6 @@ jobs:
             cat ~/inventory.txt
             EC2_IP=$(cat ~/EC2_IP.txt)
             echo "StrictHostKeyChecking no" > ~/.ssh/config
-            # sudo ssh -o "StrictHostKeyChecking no" "${EC2_IP}"
 
             ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
       
