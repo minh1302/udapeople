@@ -1,7 +1,6 @@
 ---
 
 - name: create folders
-  become: true
   shell: |
     cd /home/{{ ansible_user }}
     mkdir compressed
