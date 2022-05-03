@@ -627,7 +627,7 @@ workflows:
       #     requires: [configure-infrastructure]
       - deploy-frontend:
           context: SLACK_APP
-          requires: [run-migrations]
+          # requires: [run-migrations]
       # - deploy-backend:
       #     context: SLACK_APP
       #     requires: [run-migrations]
