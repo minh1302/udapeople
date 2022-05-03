@@ -307,7 +307,7 @@ jobs:
           name: Install dependencies
           command: |
             pip install --upgrade pip
-            apk add --update ansible 
+            apk add --update ansible
             pip3 install --no-cache-dir awscli
       - run:
           name: Configure server
