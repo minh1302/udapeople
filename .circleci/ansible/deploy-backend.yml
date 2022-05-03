@@ -1,12 +1,17 @@
 ---
 
-- hosts: web
+- name: "Deploy backend" 
+  hosts: web
   user: "ubuntu"
   become: true
   become_method: sudo
   become_user: root  
   gather_facts: false
 
+  roles:
+    # Your code here
+    - deploy
+    
   vars:
     - ansible_python_interpreter: /usr/bin/python3
     - ansible_host_key_checking: false
@@ -17,7 +22,3 @@
     wait_for_connection:
       delay: 1
       timeout: 300
-
-  roles:
-    # Your code here
-    - deploy
