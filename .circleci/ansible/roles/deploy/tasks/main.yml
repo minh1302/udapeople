@@ -1,5 +1,13 @@
 ---
 
+- name: create folders
+  become: true
+  shell: |
+    cd /home/{{ ansible_user }}
+    mkdir compressed
+    mkdir extracted
+    ls
+
 - name: Copy files before extracting
   copy:
     src: "/tmp/artifact.tar.gz"
