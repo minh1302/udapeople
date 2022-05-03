@@ -515,12 +515,14 @@ jobs:
             apk add --update npm 
             apk add --update curl
             pip3 install --no-cache-dir awscli
+            
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicDnsName' \
-              --output text
+            aws ec2 describe-instances \
+                --query 'Reservations[*].Instances[*].PublicDnsName' \
+                --output text > ~/inventory.txt
+            export BACKEND_IP=$(cat ~/inventory.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
       - run:
@@ -606,7 +608,6 @@ jobs:
 #               # your code here
 #             fi
 
-
   remove-test-environment:
     docker:
       - image: amazon/aws-cli
@@ -652,8 +653,8 @@ workflows:
       # - deploy-frontend:
       #     context: SLACK_APP
       #     requires: [run-migrations]
-      - deploy-backend:
-          context: SLACK_APP
+      # - deploy-backend:
+      #     context: SLACK_APP
           # requires: [run-migrations]
       - smoke-test:
           context: SLACK_APP
