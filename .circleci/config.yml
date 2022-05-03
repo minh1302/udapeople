@@ -504,7 +504,7 @@ jobs:
           channel: general
           event: fail
           template: basic_fail_1 
-          
+
   smoke-test:
     docker:
       # Lightweight Docker image 
@@ -535,8 +535,6 @@ jobs:
             echo "${STATUS_URL}" > ~/statusURL.txt
             chmod 777 ~/statusURL.txt
             cat ~/statusURL.txt
-            
-            nc -vz "${BACKEND_IP}" 3030
 
       - run:
           name: Backend smoke test.
@@ -670,13 +668,13 @@ workflows:
       # - deploy-frontend:
       #     context: SLACK_APP
       #     requires: [run-migrations]
-      # - deploy-backend:
-      #     context: SLACK_APP
-      #     # requires: [run-migrations]
+      - deploy-backend:
+          context: SLACK_APP
+          # requires: [run-migrations]
       - smoke-test:
           context: SLACK_APP
           # requires: [deploy-backend, deploy-frontend]
-          # requires: [deploy-backend]
+          requires: [deploy-backend]
       # - cloudfront-update:
           # context: SLACK_APP
       #     requires: [smoke-test]
