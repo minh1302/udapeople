@@ -12,34 +12,16 @@
     - ansible_python_interpreter: /usr/bin/python3
     - ansible_host_key_checking: false
     - ansible_stdout_callback: yaml
-    - ssh_known_hosts_command: "ssh-keyscan -T 10"
-    - ssh_known_hosts_file: "{{ lookup('env','HOME') + '/.ssh/known_hosts' }}"
-    - ssh_known_hosts: "{{ groups['web'] }}"
 
   pre_tasks:
-    - name: For each host, scan for its ssh public key
+    - name: Accept EC2 SSH host keys
       connection: local
-      shell: "ssh-keyscan {{ item }},`dig +short {{ item }}`"
-      with_items: "{{ ssh_known_hosts }}"
-      register: ssh_known_host_results
-      ignore_errors: yes
-
-    - name: Add/update the public key in the '{{ ssh_known_hosts_file }}'
-      connection: local
-      known_hosts:
-        name: "{{ item.item }}"
-        key: "{{ item.stdout }}"
-        path: "{{ ssh_known_hosts_file }}"
-      with_items: "{{ ssh_known_host_results.results }}"
-
-  #   - name: Accept EC2 SSH host keys
-  #     connection: local
-  #     become: true
-  #     shell: |
-  #       ssh-keygen -F {{ inventory_hostname }} || ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts
-  #       cat ~/.ssh/known_hosts
-  #     register: known_hosts_script
-  #     changed_when: "'found' not in known_hosts_script.stdout"
+      become: true
+      shell: |
+        ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts
+        cat ~/.ssh/known_hosts
+      register: known_hosts_script
+      # changed_when: "'found' not in known_hosts_script.stdout"
 
   roles:
     # Your code here
