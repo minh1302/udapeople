@@ -628,41 +628,41 @@ jobs:
             fi
   
   
-test-backend-connection:
-  docker:
-    # Docker image here that supports NodeJS
-    - image: circleci/node:13.8.0      
-    
-  steps:
-    # Checkout code from git
-    - checkout
+  test-backend-connection:
+    docker:
+      # Docker image here that supports NodeJS
+      - image: circleci/node:13.8.0      
+      
+    steps:
+      # Checkout code from git
+      - checkout
 
-    # Install dependencies
-    - run:
-        name: Install dependencies
-        command: |
-          # sudo apt-get -y install python3-pip
-          # sudo pip3 install --no-cache-dir awscli
-          npm install pm2
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            # sudo apt-get -y install python3-pip
+            # sudo pip3 install --no-cache-dir awscli
+            npm install pm2
 
-    - run:
-        name: build & install
-        # Run and save the migration output
-        command: |
-          cd backend
-          npm install     
-          npm run build
-          pm2 stop default
-          pm2 start npm -- start
+      - run:
+          name: build & install
+          # Run and save the migration output
+          command: |
+            cd backend
+            npm install     
+            npm run build
+            pm2 stop default
+            pm2 start npm -- start
 
-          cat ~/migrations_dump.txt
+            cat ~/migrations_dump.txt
 
-    # Send migration status to kvdb.io
-    - run:
-        name: check status backend
-        # If you are using kvdb.io, generate the bucket ID "Y2wgZLY8miMzxFRtpP8iEb" in your local terminal first
-        command: |   
-          curl "http://localhost:3030/api/status"
+      # Send migration status to kvdb.io
+      - run:
+          name: check status backend
+          # If you are using kvdb.io, generate the bucket ID "Y2wgZLY8miMzxFRtpP8iEb" in your local terminal first
+          command: |   
+            curl "http://localhost:3030/api/status"
 
 workflows:
   default:
