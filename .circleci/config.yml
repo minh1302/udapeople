@@ -464,8 +464,8 @@ jobs:
             ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
       
       # Here's where you will add some code to rollback on failure   
-      - destroy-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"    
+      # - destroy-environment:
+      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"    
 
       - slack/notify:
           channel: general
@@ -587,9 +587,9 @@ workflows:
       - run-migrations:
           context: SLACK_APP
           requires: [configure-infrastructure]
-      - deploy-frontend:
-          context: SLACK_APP
-          requires: [run-migrations]
+      # - deploy-frontend:
+      #     context: SLACK_APP
+      #     requires: [run-migrations]
       - deploy-backend:
           context: SLACK_APP
           requires: [run-migrations]
@@ -602,6 +602,6 @@ workflows:
       # - cleanup:
           # context: SLACK_APP
       #     requires: [cloudfront-update]
-      - remove-test-environment:
-          context: SLACK_APP
-          requires: [deploy-backend]
+      # - remove-test-environment:
+      #     context: SLACK_APP
+      #     requires: [deploy-backend]
