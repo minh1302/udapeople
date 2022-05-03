@@ -521,7 +521,7 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicDnsName' \
               --output text > ~/ip.txt
             chmod 777 ~/ip.txt
-            sed ‘/^$/d’ ~/ip.txt
+            sed '/^$/d' ~/ip.txt
             BACKEND_IP=$(cat ~/ip.txt)
             echo "BACKEND_IP = ${BACKEND_IP}"
             export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
