@@ -15,7 +15,7 @@
   pre_tasks:
     - name: Accept EC2 SSH host keys
       connection: local
-      become: false
+      become: true
       shell: |
         ssh-keygen -F {{ inventory_hostname }} || ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts
         cat ~/.ssh/known_hosts
