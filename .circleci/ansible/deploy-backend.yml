@@ -21,7 +21,7 @@
           ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts
       register: known_hosts_script
       changed_when: "'found' not in known_hosts_script.stdout"
-
+      
     - name: wait for target connection to become reachable/usable.
       # Your code here
       wait_for_connection:
