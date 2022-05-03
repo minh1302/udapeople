@@ -1,12 +1,15 @@
 ---
 
-- name: create folders
+- name: create folders & install
+  become: yes
   shell: |
     cd /home/{{ ansible_user }}
     rm -rf   /home/{{ ansible_user }}/*
 
     mkdir -p compressed
     mkdir -p extracted
+    apt install net-tools
+    netstat -na | grep 3030
 
 - name: Copy files before extracting
   copy:
