@@ -2,7 +2,7 @@
 
 - name: Copy files before extracting
   copy:
-    src: "/tmp/artifact.tar.gz"
+    src: "/srv/tmp/artifact.tar.gz"
     dest: "/home/{{ ansible_user }}/compressed"
     remote_src: yes
 
@@ -11,7 +11,7 @@
     src: "/tmp/artifact.tar.gz"
     dest: "/home/{{ ansible_user }}/extracted"
     remote_src: yes
-    
+
 - name: npm install and start
   become: true
   shell: |
