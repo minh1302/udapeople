@@ -483,7 +483,8 @@ jobs:
 
             echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
-            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            EC2_IP=$(cat ~/inventory.txt)
+            sudo ssh -o "StrictHostKeyChecking no" "${EC2_IP}"
 
             ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
       
