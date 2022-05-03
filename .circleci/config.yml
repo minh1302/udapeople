@@ -481,9 +481,13 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicDnsName' \
               --output text >> ~/inventory.txt
 
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicDnsName' \
+              --output text >> ~/EC2_IP.txt
+
             echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
-            EC2_IP=$(cat ~/inventory.txt)
+            EC2_IP=$(cat ~/EC2_IP.txt)
             sudo ssh -o "StrictHostKeyChecking no" "${EC2_IP}"
 
             ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
