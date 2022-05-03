@@ -25,9 +25,8 @@
     - name: wait for target connection to become reachable/usable.
       # Your code here
       wait_for_connection:
+        delay: 1
         timeout: 300
-      shell: |
-        exit 0
 
   roles:
     # Your code here
