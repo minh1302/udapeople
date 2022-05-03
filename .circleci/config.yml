@@ -475,7 +475,8 @@ jobs:
 
       - run:
           name: Deploy backend
-          command: |            
+          command: |        
+            node -v    
             echo "[web]" > ~/inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicDnsName' \
