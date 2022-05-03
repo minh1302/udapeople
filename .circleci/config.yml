@@ -641,7 +641,7 @@ jobs:
       - run:
           name: Check local host
           command: |
-            ping localhost
+            sudo ping localhost
 
       # # Install dependencies
       # - run:
