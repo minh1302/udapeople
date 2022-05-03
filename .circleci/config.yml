@@ -522,6 +522,7 @@ jobs:
               --output text > ~/ip.txt
             chmod 777 ~/ip.txt
             BACKEND_IP=$(cat ~/ip.txt)
+            echo "BACKEND_IP = ${BACKEND_IP}"
             export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
             echo "${STATUS_URL}" > ~/statusURL.txt
             chmod 777 ~/statusURL.txt
