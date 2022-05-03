@@ -19,19 +19,14 @@
     dest: "/home/{{ ansible_user }}/extracted/"
     remote_src: yes
 
-- name: switch to root user
-  become: true
-  shell: |
-    sudo su -
-
 - name: npm install
-  become: true
+  become: yes
   shell: |
     cd /home/{{ ansible_user }}/extracted/backend  
     npm install
     
 - name: pm2 start
-  become: true
+  become: yes
   shell: |
     cd /home/{{ ansible_user }}/extracted/backend   
     pm2 stop default
