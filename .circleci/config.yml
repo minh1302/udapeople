@@ -442,6 +442,7 @@ jobs:
             apk add --update npm 
             apk add --update ansible 
             apk add --update tar gzip 
+            apk add --update curl
             pip3 install --no-cache-dir awscli
 
       - run:
