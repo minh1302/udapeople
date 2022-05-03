@@ -441,6 +441,7 @@ jobs:
             apk add --update nodejs            
             apk add --update npm 
             apk add --update ansible 
+            apk add --update tar gzip 
             pip3 install --no-cache-dir awscli
             
       - run:
@@ -452,7 +453,6 @@ jobs:
             # cd ..
             
             tar -C backend -czvf /tmp/artifact.tar.gz .
-            echo $PWD
             
             echo "[web]" > ~/inventory.txt
             aws ec2 describe-instances \
