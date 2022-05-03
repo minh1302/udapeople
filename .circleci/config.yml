@@ -479,11 +479,11 @@ jobs:
             node -v    
             echo "[web]" > ~/inventory.txt
             aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicDnsName' \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> ~/inventory.txt
 
             aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicDnsName' \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> ~/EC2_IP.txt
 
             echo "Contents  of the inventory.txt file is -------"
