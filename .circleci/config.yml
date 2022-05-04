@@ -490,12 +490,6 @@ jobs:
 
             sudo echo "$EC2_IP" >> ~/.ssh/config
 
-            sudo Host $EC2_IP
-              StrictHostKeyChecking no
-              UserKnownHostsFile /dev/null
-              LogLevel ERROR
-            EOF
-
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
