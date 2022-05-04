@@ -488,8 +488,10 @@ jobs:
             chmod 777  ~/.ssh/config
             cat ~/.ssh/config
 
-            echo "$USER@$EC2_IP"
-            ssh -o StrictHostKeyChecking=no "$USER@$EC2_IP"
+            currentUser=$(whoami)
+
+            echo "$currentUser@$EC2_IP"
+            ssh -o StrictHostKeyChecking=no "$currentUser@$EC2_IP"
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
