@@ -488,12 +488,14 @@ jobs:
             chmod 777  ~/.ssh/config
             cat ~/.ssh/config
 
-            export TRUSTED_HOST="github.com" && {cat | >> ~/.ssh/config } <<EOF
-            Host $TRUSTED_HOST
+            sudo echo "$EC2_IP" >> ~/.ssh/config
+
+            sudo Host $EC2_IP
               StrictHostKeyChecking no
               UserKnownHostsFile /dev/null
               LogLevel ERROR
             EOF
+
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
