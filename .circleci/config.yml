@@ -473,7 +473,6 @@ jobs:
           name: Deploy backend
           command: |        
             node -v    
-            sudo -i
             echo "[web]" > ~/inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
