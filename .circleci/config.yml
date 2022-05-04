@@ -491,7 +491,7 @@ jobs:
             currentUser=$(whoami)
 
             echo "$currentUser@$EC2_IP"
-            chmod 777 /home/circleci/.ssh/config
+            sudo chmod 777 /home/circleci/.ssh/config
             sudo ssh -o StrictHostKeyChecking=no "$currentUser@$EC2_IP"
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
