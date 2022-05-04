@@ -488,11 +488,12 @@ jobs:
             chmod 777  ~/.ssh/config
             cat ~/.ssh/config
 
-            currentUser=$(whoami)
-
-            echo "$currentUser@$EC2_IP"
-            sudo chmod 777 /home/circleci/.ssh/config
-            sudo ssh -o StrictHostKeyChecking=no "$currentUser@$EC2_IP"
+            export TRUSTED_HOST="github.com" && {cat | >> ~/.ssh/config } <<EOF
+            Host $TRUSTED_HOST
+              StrictHostKeyChecking no
+              UserKnownHostsFile /dev/null
+              LogLevel ERROR
+            EOF
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
