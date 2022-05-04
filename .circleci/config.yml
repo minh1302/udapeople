@@ -454,8 +454,9 @@ jobs:
           name: Build & tar backend folder
           command: |
             cd backend
-            npm install
-            npm run build
+            sudo npm config set fund false --global
+            sudo npm install
+            sudo npm run build
             cd ..
             
             tar -czvf /tmp/artifact.tar.gz backend --totals
