@@ -450,24 +450,24 @@ jobs:
             sudo apt-get -y install curl
             sudo pip3 install --no-cache-dir awscli
 
-      - run:
-          name: Build & tar backend folder
-          command: |
-            cd backend
-            sudo npm config set fund false --global
-            sudo npm install
-            sudo npm run build
-            cd ..
+      # - run:
+      #     name: Build & tar backend folder
+      #     command: |
+      #       cd backend
+      #       sudo npm config set fund false --global
+      #       sudo npm install
+      #       sudo npm run build
+      #       cd ..
             
-            tar -czvf /tmp/artifact.tar.gz backend --totals
+      #       tar -czvf /tmp/artifact.tar.gz backend --totals
 
-            FILE=/tmp/artifact.tar.gz
-            if [ -f "$FILE" ]; then
-                echo "$FILE exists."
-            else 
-                echo "$FILE does not exist."
-                exit 1
-            fi
+      #       FILE=/tmp/artifact.tar.gz
+      #       if [ -f "$FILE" ]; then
+      #           echo "$FILE exists."
+      #       else 
+      #           echo "$FILE does not exist."
+      #           exit 1
+      #       fi
 
       - run:
           name: Deploy backend
@@ -481,7 +481,6 @@ jobs:
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> ~/EC2_IP.txt
-
             echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
             EC2_IP=$(cat ~/EC2_IP.txt)
@@ -489,6 +488,8 @@ jobs:
             chmod 777  ~/.ssh/config
             cat ~/.ssh/config
 
+            echo "$USER@$EC2_IP"
+            ssh -o StrictHostKeyChecking=no "$USER@$EC2_IP"
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
