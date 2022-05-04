@@ -488,7 +488,7 @@ jobs:
             chmod 777  ~/.ssh/config
             cat ~/.ssh/config
 
-            sudo ssh-keyscan -t rsa "$EC2_IP"
+            sudo ssh-keygen -R "$EC2_IP"
 
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
