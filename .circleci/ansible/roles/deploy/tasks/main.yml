@@ -8,8 +8,6 @@
 
     mkdir -p compressed
     mkdir -p extracted
-    apt install net-tools
-    netstat -na | grep 3030
 
 - name: Copy files before extracting
   copy:
