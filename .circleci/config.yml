@@ -485,6 +485,7 @@ jobs:
             cat ~/inventory.txt
             EC2_IP=$(cat ~/EC2_IP.txt)
             
+            export ANSIBLE_HOST_KEY_CHECKING=False
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
