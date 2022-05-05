@@ -634,7 +634,7 @@ jobs:
 
               if [[ $stack =~ udapeople-.*-.* ]]
                 echo udapeople-stack
-                if [[ ! $stack =~ .*"${CURRENT_WORKFLOW_ID}".* ]]
+                elif [[ ! $stack =~ .*"${CURRENT_WORKFLOW_ID}".* ]]
                 then
                   echo find-old-workflow-id
                   OldWorkflowID=$(echo $stack | sed -r 's/udapeople-.*-//g')
@@ -645,7 +645,6 @@ jobs:
                   aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
                 else
                   echo "========> NOT MATCHING -> CAN NOT CLEAN "
-                fi
               fi
             done
 
