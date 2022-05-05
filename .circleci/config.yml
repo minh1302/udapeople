@@ -291,11 +291,11 @@ jobs:
           fingerprints: ["45:8b:60:3b:68:26:7f:2e:f1:88:e2:35:96:1d:14:73"] 
           # You can get this ID in the section where you registered the SSH Key
 
-      # # attach workspace
-      # - attach_workspace:
-      #     # Must be absolute path or relative path from working_directory
-      #     at: ~/
-          
+      # attach workspace
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ~/
+
       # Install dependencies
       - run:
           name: Install dependencies
@@ -307,12 +307,17 @@ jobs:
       - run:
           name: Configure server
           command: |
-            echo "[web]" > ~/inventory.txt
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> ~/inventory.txt
+            # echo "[web]" > ~/inventory.txt
+            # aws ec2 describe-instances \
+            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            #   --output text >> ~/inventory.txt
             cat ~/inventory.txt
             ansible-playbook -i ~/inventory.txt .circleci/ansible/configure-server.yml 
+      
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt  
       
       # Here's where you will add some code to rollback on failure  
       - destroy-environment:
@@ -392,14 +397,22 @@ jobs:
             sudo apt-get -y install tar gzip
             sudo pip3 install --no-cache-dir awscli
 
+      - attach_workspace:
+          at: ~/
+      
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt  
+
       - run:
           name: Get backend url
           command: |
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> ~/inventory.txt
+            # aws ec2 describe-instances \
+            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            #   --output text >> ~/inventory.txt
 
-            export BACKEND_IP=$(cat ~/inventory.txt)            
+            export BACKEND_IP=$(cat ~/inventory.txt | awk '{gsub(/[web]\n/,"")}1')            
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
@@ -472,19 +485,27 @@ jobs:
                 exit 1
             fi
 
+      - attach_workspace:
+          at: ~/
+
       - run:
           name: Deploy backend
           command: |        
             node -v    
-            echo "[web]" > ~/inventory.txt
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> ~/inventory.txt
+            # echo "[web]" > ~/inventory.txt
+            # aws ec2 describe-instances \
+            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            #   --output text >> ~/inventory.txt
 
             echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
 
             ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
+      
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt  
 
       # Remote EC2 to check backend status
       # pm2 list
@@ -520,15 +541,19 @@ jobs:
             pip3 install --no-cache-dir awscli
             echo ${PWD}
 
+      - attach_workspace:
+          at: ~/
+
       - run:
           name: Get backend url
           command: |          
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text > ~/ip.txt
-            chmod 777 ~/ip.txt
-            sed '/^$/d' ~/ip.txt
-            BACKEND_IP=$(cat ~/ip.txt)
+            # aws ec2 describe-instances \
+            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            #   --output text > ~/ip.txt
+            # chmod 777 ~/ip.txt
+            # sed '/^$/d' ~/ip.txt
+
+            export BACKEND_IP=$(cat ~/inventory.txt | awk '{gsub(/[web]\n/,"")}1')      
             echo "BACKEND_IP = ${BACKEND_IP}"
             export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
             echo "${STATUS_URL}" > ~/statusURL.txt
