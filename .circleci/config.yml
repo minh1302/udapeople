@@ -484,8 +484,11 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
             EC2_IP=$(cat ~/EC2_IP.txt)
-            
-            export ANSIBLE_HOST_KEY_CHECKING=False
+
+            echo "[ssh_connection]" > ~/.ansible.cfg
+            echo "ssh_args = -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no" >> ~/.ansible.cfg
+            cat ~/.ansible.cfg
+
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
