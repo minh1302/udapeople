@@ -450,7 +450,7 @@ jobs:
           name: Install dependencies
           command: |
             pip install --upgrade pip
-            apk add --update ansible
+            apk add --update tar gzip ansible nodejs npm
             pip3 install --no-cache-dir awscli
 
       - run:
