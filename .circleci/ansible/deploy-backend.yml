@@ -13,7 +13,10 @@
     - ansible_host_key_checking: false
     - ansible_stdout_callback: yaml
   
-  # pre_tasks :
+  pre_tasks :
+  - name: accept new ssh fingerprints                                         
+    shell: ssh-keyscan -H {{ item.public_ip }} >> ~/.ssh/known_hosts          
+    with_items: '{{ ec2.instances }}'
     
   # - name: wait for target connection to become reachable/usable.
   #   wait_for_connection:
