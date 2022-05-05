@@ -490,7 +490,7 @@ jobs:
 
             sudo ssh-keygen -R "$EC2_IP"
 
-            sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
+            sudo ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
       # pm2 list
