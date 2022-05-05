@@ -634,7 +634,7 @@ jobs:
 
               if [[ $stack =~ udapeople-.*-.* ]]
                 echo udapeople-stack
-                elif [[ ! $stack =~ .*"${CURRENT_WORKFLOW_ID}".* ]]
+                elseif [[ ! $stack =~ .*"${CURRENT_WORKFLOW_ID}".* ]]
                 then
                   echo find-old-workflow-id
                   OldWorkflowID=$(echo $stack | sed -r 's/udapeople-.*-//g')
