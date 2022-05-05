@@ -485,9 +485,9 @@ jobs:
             cat ~/inventory.txt
             EC2_IP=$(cat ~/EC2_IP.txt)
 
-            echo "[defaults]" > ~/.ansible.cfg
-            echo "host_key_checking = False" >> ~/.ansible.cfg
-            cat ~/.ansible.cfg
+            # echo "[defaults]" > /etc/ansible/ansible.cfg
+            echo "host_key_checking = False" >> /etc/ansible/ansible.cfg
+            cat /etc/ansible/ansible.cfg
 
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
