@@ -485,9 +485,7 @@ jobs:
             cat ~/inventory.txt
             EC2_IP=$(cat ~/EC2_IP.txt)
 
-            echo "[ssh_connection]" > ~/.ansible.cfg
-            echo "ssh_args = -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no" >> ~/.ansible.cfg
-            cat ~/.ansible.cfg
+            sudo ssh-keygen -l -f /etc/ssh/ssh_host_ecdsa_key.pub
 
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
