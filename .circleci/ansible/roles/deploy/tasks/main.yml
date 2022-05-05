@@ -1,7 +1,11 @@
 ---
 - name: Write the new ec2 instance host key to known hosts
+  become: yes
   connection: local
-  shell: "ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts"
+  shell: |
+    mkdir -p ~/.ssh
+    echo "" > ~/.ssh/known_hosts
+    ssh-keyscan -H {{ inventory_hostname }} >> ~/.ssh/known_hosts
 
 - name: create folders & install
   become: yes
