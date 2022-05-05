@@ -457,9 +457,9 @@ jobs:
           name: Build & tar backend folder
           command: |
             cd backend
-            sudo npm config set fund false --global
-            sudo npm install
-            sudo npm run build
+            npm config set fund false --global
+            npm install
+            npm run build
             cd ..
             
             tar -czvf /tmp/artifact.tar.gz backend --totals
@@ -481,14 +481,10 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> ~/inventory.txt
 
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> ~/EC2_IP.txt
             echo "Contents  of the inventory.txt file is -------"
             cat ~/inventory.txt
-            EC2_IP=$(cat ~/EC2_IP.txt)
 
-            sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
+            ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
       # pm2 list
