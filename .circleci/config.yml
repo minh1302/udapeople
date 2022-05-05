@@ -606,38 +606,48 @@ jobs:
     docker:
       # Docker image here
     - image: amazon/aws-cli
+
+    # Install dependencies
     steps:
-      # Checkout code from git
       - run:
-          name: Get old stack workflow id
+          name: Install dependencies
           command: |
-            # Fetch the Old workflow ID
-            export OldWorkflowID=$(aws cloudformation \
-                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                    --no-paginate --output text)
-            echo OldWorkflowID: "${OldWorkflowID}"
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
-            # Fetch the stack names          
-            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                    --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-            echo Stack names: "${STACKS[@]}"          
+            yum install -y curl
+
       - run:
           name: Remove old stacks and files
           command: |
-          
-            echo OldWorkflowID: "${OldWorkflowID}"            
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
 
-            # You can use any condition like:
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
-            then
-              aws cloudformation delete-stack --stack-name udapeople-backend-"${OldWorkflowID}"
-              aws s3 rb s3://udapeople-"${OldWorkflowID}" --force  
-              aws cloudformation delete-stack --stack-name udapeople-prontend-"${OldWorkflowID}"
-            else
-            # your code goes here
-              return 1
-            fi
+            STACK_LIST=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                          --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+            
+
+            # CURRENT_WORKFLOW_ID="${CIRCLE_WORKFLOW_ID:0:7}"   
+            CURRENT_WORKFLOW_ID="1"         
+            CurrentStackName="${CIRCLE_WORKFLOW_ID:0:7}"
+
+            echo CurrentWorkflowID "${CURRENT_WORKFLOW_ID}"
+
+            for stack in ${STACK_LIST[@]}
+            do
+              echo $stack
+
+              if [[ $stack =~ udapeople-.*-.* ]]
+                echo udapeople-stack
+                if [[ ! $stack =~ .*"${CURRENT_WORKFLOW_ID}".* ]]
+                then
+                  echo find-old-workflow-id
+                  OldWorkflowID=$(echo $stack | sed -r 's/udapeople-.*-//g')
+                  echo OldWorkflowID "${OldWorkflowID}"
+
+                  aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+                  aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+                  aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                else
+                  echo "========> NOT MATCHING -> CAN NOT CLEAN "
+                fi
+              fi
+            done
 
       - slack/notify:
           channel: general
@@ -652,46 +662,46 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend:
-          context: SLACK_APP
-      - build-backend:
-          context: SLACK_APP
-      - test-frontend:
-          context: SLACK_APP
-          requires: [build-frontend]
-      - test-backend:
-          context: SLACK_APP
-          requires: [build-backend]
-      - scan-backend:
-          context: SLACK_APP
-          requires: [build-backend]
-      - scan-frontend:
-          context: SLACK_APP
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          context: SLACK_APP
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          context: SLACK_APP
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          context: SLACK_APP
-          requires: [configure-infrastructure]          
-      - deploy-frontend:
-          context: SLACK_APP
-          requires: [run-migrations]
-      - deploy-backend:
-          context: SLACK_APP
-          requires: [run-migrations]
-      - smoke-test:
-          context: SLACK_APP
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          context: SLACK_APP
-          requires: [smoke-test]
+      # - build-frontend:
+      #     context: SLACK_APP
+      # - build-backend:
+      #     context: SLACK_APP
+      # - test-frontend:
+      #     context: SLACK_APP
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     context: SLACK_APP
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     context: SLACK_APP
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     context: SLACK_APP
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     context: SLACK_APP
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      #     context: SLACK_APP
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     context: SLACK_APP
+      #     requires: [configure-infrastructure]          
+      # - deploy-frontend:
+      #     context: SLACK_APP
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     context: SLACK_APP
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     context: SLACK_APP
+      #     requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     context: SLACK_APP
+      #     requires: [smoke-test]
       - cleanup:
           context: SLACK_APP
-          requires: [cloudfront-update]
+          # requires: [cloudfront-update]
