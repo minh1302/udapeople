@@ -485,8 +485,6 @@ jobs:
             cat ~/inventory.txt
             EC2_IP=$(cat ~/EC2_IP.txt)
 
-            sudo ssh-keygen -l -f /etc/ssh/ssh_host_ecdsa_key.pub
-
             sudo ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
 
       # Remote EC2 to check backend status
