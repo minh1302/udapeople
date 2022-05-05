@@ -450,7 +450,7 @@ jobs:
           name: Install dependencies
           command: |
             pip install --upgrade pip
-            apk add --update tar gzip ansible nodejs npm
+            apk add --update tar gzip ansible nodejs npm curl
             pip3 install --no-cache-dir awscli
 
       - run:
@@ -489,7 +489,8 @@ jobs:
       # Remote EC2 to check backend status
       # pm2 list
       # pm2 logs npm
-      # netstat -na | grep 3030
+      # sudo apt install net-tools
+      #  netstat -na | grep 3030
       
       # Here's where you will add some code to rollback on failure   
       # - destroy-environment:
@@ -681,13 +682,13 @@ workflows:
       # - deploy-frontend:
       #     context: SLACK_APP
       #     requires: [run-migrations]
-      - deploy-backend:
-          context: SLACK_APP
-          # requires: [run-migrations]
+      # - deploy-backend:
+      #     context: SLACK_APP
+      #     # requires: [run-migrations]
       - smoke-test:
           context: SLACK_APP
           # requires: [deploy-backend, deploy-frontend]
-          requires: [deploy-backend]
+          # requires: [deploy-backend]
       # - cloudfront-update:
           # context: SLACK_APP
       #     requires: [smoke-test]
