@@ -38,10 +38,10 @@ Resources:
         - Key: Name
           Value: !Sub backend-${WorkflowID}
 
-    EIP:
-      Type: AWS::EC2::EIP
-      Properties:
-          InstanceId: !Ref EC2Instance
-          Tags:
-          - Key: Name
-            Value: !Sub Elastic IP for Server backend-${WorkflowID}
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+        InstanceId: !Ref EC2Instance
+        Tags:
+        - Key: Name
+          Value: !Sub Elastic IP for Server backend-${WorkflowID}
