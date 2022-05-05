@@ -264,6 +264,7 @@ jobs:
             export BACKEND_IP=$(cat ~/BACKEND_IP.txt)
             echo "${BACKEND_IP}" >> ~/inventory.txt
             cat ~/inventory.txt
+
       - persist_to_workspace:
           root: ~/
           paths:
@@ -312,6 +313,11 @@ jobs:
           command: |
             cat ~/inventory.txt
             ansible-playbook -i ~/inventory.txt .circleci/ansible/configure-server.yml 
+            
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt  
       
       # Here's where you will add some code to rollback on failure  
       - destroy-environment:
@@ -412,6 +418,11 @@ jobs:
             echo "tar $PWD/artifact-${CIRCLE_WORKFLOW_ID:0:7}.tar.gz"
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
+            
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt  
 
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
@@ -438,10 +449,10 @@ jobs:
           fingerprints: ["45:8b:60:3b:68:26:7f:2e:f1:88:e2:35:96:1d:14:73"] 
           # You can get this ID in the section where you registered the SSH Key
 
-      # # attach workspace
-      # - attach_workspace:
-      #     # Must be absolute path or relative path from working_directory
-      #     at: ~/
+      # attach workspace
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ~/
           
       # Install dependencies
       - run:
@@ -470,9 +481,6 @@ jobs:
                 exit 1
             fi
 
-      - attach_workspace:
-          at: ~/
-
       - run:
           name: Deploy backend
           command: |        
@@ -481,6 +489,11 @@ jobs:
             cat ~/inventory.txt
 
             ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
+            
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt  
 
       # Remote EC2 to check backend status
       # pm2 list
