@@ -263,7 +263,7 @@ jobs:
 
             export BACKEND_IP=$(cat ~/BACKEND_IP.txt)
             echo "${BACKEND_IP}" >> ~/inventory.txt
-            cat ~/inventory.txt
+            cat ~/inventory.txt      
 
       - persist_to_workspace:
           root: ~/
