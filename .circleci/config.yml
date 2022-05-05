@@ -619,14 +619,11 @@ jobs:
           command: |
 
             STACK_LIST=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                          --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
-            
+                          --stack-status-filter CREATE_COMPLETE --no-paginate --output text)            
 
-            # CURRENT_WORKFLOW_ID="${CIRCLE_WORKFLOW_ID:0:7}"   
-            CURRENT_WORKFLOW_ID="1"         
-            CurrentStackName="${CIRCLE_WORKFLOW_ID:0:7}"
+            CURRENT_WORKFLOW_ID="${CIRCLE_WORKFLOW_ID:0:7}" 
 
-            echo CurrentWorkflowID "${CURRENT_WORKFLOW_ID}"
+            echo CURRENT_WORKFLOW_ID "${CURRENT_WORKFLOW_ID}"
 
             for stack in ${STACK_LIST[@]}
             do
@@ -643,6 +640,8 @@ jobs:
                   echo OldWorkflowID "${OldWorkflowID}"
 
                   aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+                  echo "=====> remove bucket s3://udapeople-${OldWorkflowID}"
+
                   aws cloudformation delete-stack --stack-name "udapeople-prontend-${OldWorkflowID}"
                   echo "=====> deleted stack udapeople-prontend-${OldWorkflowID}"
 
@@ -668,46 +667,46 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend:
-      #     context: SLACK_APP
-      # - build-backend:
-      #     context: SLACK_APP
-      # - test-frontend:
-      #     context: SLACK_APP
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     context: SLACK_APP
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     context: SLACK_APP
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     context: SLACK_APP
-      #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     context: SLACK_APP
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [master]
-      # - configure-infrastructure:
-      #     context: SLACK_APP
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     context: SLACK_APP
-      #     requires: [configure-infrastructure]          
-      # - deploy-frontend:
-      #     context: SLACK_APP
-      #     requires: [run-migrations]
-      # - deploy-backend:
-      #     context: SLACK_APP
-      #     requires: [run-migrations]
-      # - smoke-test:
-      #     context: SLACK_APP
-      #     requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     context: SLACK_APP
-      #     requires: [smoke-test]
+      - build-frontend:
+          context: SLACK_APP
+      - build-backend:
+          context: SLACK_APP
+      - test-frontend:
+          context: SLACK_APP
+          requires: [build-frontend]
+      - test-backend:
+          context: SLACK_APP
+          requires: [build-backend]
+      - scan-backend:
+          context: SLACK_APP
+          requires: [build-backend]
+      - scan-frontend:
+          context: SLACK_APP
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          context: SLACK_APP
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          context: SLACK_APP
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          context: SLACK_APP
+          requires: [configure-infrastructure]          
+      - deploy-frontend:
+          context: SLACK_APP
+          requires: [run-migrations]
+      - deploy-backend:
+          context: SLACK_APP
+          requires: [run-migrations]
+      - smoke-test:
+          context: SLACK_APP
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          context: SLACK_APP
+          requires: [smoke-test]
       - cleanup:
           context: SLACK_APP
-          # requires: [cloudfront-update]
+          requires: [cloudfront-update]
