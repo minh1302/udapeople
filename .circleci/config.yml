@@ -706,7 +706,7 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           context: SLACK_APP
-          requires: [smoke-test]
+          requires: [smoke-test]          
       - cleanup:
           context: SLACK_APP
           requires: [cloudfront-update]
