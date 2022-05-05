@@ -314,11 +314,6 @@ jobs:
           command: |
             cat ~/inventory.txt
             ansible-playbook -i ~/inventory.txt .circleci/ansible/configure-server.yml 
-            
-      # - persist_to_workspace:
-      #     root: ~/
-      #     paths:
-      #       - inventory.txt  
       
       # Here's where you will add some code to rollback on failure  
       - destroy-environment:
@@ -419,11 +414,6 @@ jobs:
             echo "tar $PWD/artifact-${CIRCLE_WORKFLOW_ID:0:7}.tar.gz"
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
-            
-      # - persist_to_workspace:
-      #     root: ~/
-      #     paths:
-      #       - inventory.txt  
 
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
@@ -490,11 +480,6 @@ jobs:
             cat ~/inventory.txt
 
             ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
-            
-      # - persist_to_workspace:
-      #     root: ~/
-      #     paths:
-      #       - inventory.txt  
 
       # Remote EC2 to check backend status
       # pm2 list
@@ -536,12 +521,6 @@ jobs:
       - run:
           name: Get backend url
           command: |          
-            # aws ec2 describe-instances \
-            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            #   --output text > ~/ip.txt
-            # chmod 777 ~/ip.txt
-            # sed '/^$/d' ~/ip.txt
-
             export BACKEND_IP=$(cat ~/BACKEND_IP.txt)      
             echo "BACKEND_IP = ${BACKEND_IP}"
             export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
@@ -562,6 +541,7 @@ jobs:
                 echo "test ${STATUS_URL} FAIL"
                 return 1
             fi
+
       - run:
           name: Frontend smoke test.
           command: |
@@ -611,11 +591,11 @@ jobs:
                     --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
                     --tags project=udapeople
       # Here's where you will add some code to rollback on failure  
-      # - destroy-environment:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
 
-      # - revert-migrations:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
           channel: general
@@ -644,6 +624,10 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
+          
+            echo OldWorkflowID: "${OldWorkflowID}"            
+            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+
             # You can use any condition like:
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
@@ -668,25 +652,25 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend:
-      #     context: SLACK_APP
-      # - build-backend:
-      #     context: SLACK_APP
-      # - test-frontend:
-      #     context: SLACK_APP
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     context: SLACK_APP
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     context: SLACK_APP
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     context: SLACK_APP
-      #     requires: [build-frontend]
+      - build-frontend:
+          context: SLACK_APP
+      - build-backend:
+          context: SLACK_APP
+      - test-frontend:
+          context: SLACK_APP
+          requires: [build-frontend]
+      - test-backend:
+          context: SLACK_APP
+          requires: [build-backend]
+      - scan-backend:
+          context: SLACK_APP
+          requires: [build-backend]
+      - scan-frontend:
+          context: SLACK_APP
+          requires: [build-frontend]
       - deploy-infrastructure:
           context: SLACK_APP
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]
