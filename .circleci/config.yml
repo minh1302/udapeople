@@ -44,7 +44,7 @@ jobs:
 
             export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
             echo "PROMETHEUS_IP = ${PROMETHEUS_IP}"
-            export PROMETHEUS_URL="http://${BACKEND_IP}:9090/targets"
+            export PROMETHEUS_URL="http://${PROMETHEUS_IP}:9090/targets"
             echo "${PROMETHEUS_URL}" > ~/PROMETHEUS_URL.txt
             chmod 777 ~/PROMETHEUS_URL.txt
             cat ~/PROMETHEUS_URL.txt
@@ -222,7 +222,7 @@ jobs:
           command: |          
             export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
             echo "PROMETHEUS_IP = ${PROMETHEUS_IP}"
-            export PROMETHEUS_URL="http://${BACKEND_IP}:9090/targets"
+            export PROMETHEUS_URL="http://${PROMETHEUS_IP}:9090/targets"
             echo "${PROMETHEUS_URL}" > ~/PROMETHEUS_URL.txt
             chmod 777 ~/PROMETHEUS_URL.txt
             cat ~/PROMETHEUS_URL.txt
