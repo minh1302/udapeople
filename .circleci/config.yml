@@ -52,19 +52,20 @@ jobs:
       - run:
           name: PROMETHEUS smoke test.
           command: |
-            export PrometheusStatus="ERROR"
+            PrometheusStatus="ERROR"
 
             URL=$(cat ~/PROMETHEUS_URL.txt)            
             echo ${URL}             
             
             if curl -s ${URL} | grep "Prometheus Time Series Collection and Processing Server"
             then
-              export PrometheusStatus="OK"
+              PrometheusStatus="OK"
             else
-              export PrometheusStatus="ERROR"
+              PrometheusStatus="ERROR"
             fi
 
             echo "${PrometheusStatus}" > PrometheusStatus.txt
+            cat PrometheusStatus.txt
             
       # Send prometheus status to kvdb.io
       - run:
