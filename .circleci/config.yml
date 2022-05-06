@@ -121,7 +121,7 @@ jobs:
             PrometheusStatus=$(cat PrometheusStatus.txt)
             echo "PrometheusStatus = ${PrometheusStatus}"
 
-            if ((! $PrometheusStatus = 'OK' ))
+            if ((! $PrometheusStatus = "OK" ))
             then     
               echo "deploy-prometheus-infrastructure"
               aws cloudformation deploy \
@@ -201,7 +201,7 @@ jobs:
             echo "Contents  of the ~/inventory.txt file is -------"
             cat ~/prometheus_inventory.txt
             
-            if (( $PrometheusStatus != 'OK' ));
+            if (( $PrometheusStatus != "OK" ));
             then     
               ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/configure-prometheus-server.yml
             fi
