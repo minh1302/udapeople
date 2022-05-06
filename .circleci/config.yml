@@ -63,9 +63,6 @@ jobs:
             else
               export PrometheusStatus="ERROR"
             fi
-
-      # # Here's where you will add some code to rollback on failure   
-      - destroy-prometheus-environment
             
       # Send prometheus status to kvdb.io
       - run:
@@ -74,6 +71,9 @@ jobs:
             export KEY="PrometheusStatus"
             curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '${PrometheusStatus}'
             curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
+
+      # # Here's where you will add some code to rollback on failure   
+      - destroy-prometheus-environment
 
       - run:
           name: Check prometheus status , status OK -> job fail and do not create infrastructure
@@ -234,17 +234,14 @@ jobs:
 
             URL=$(cat ~/PROMETHEUS_URL.txt)            
             echo ${URL} 
-            #  | grep "Targets"
-            if curl -s ${URL}
+            
+            if curl -s ${URL} | grep "Prometheus Time Series Collection and Processing Server"
             then
                 # Change this to 0 after the job fails
               return 0
             else
               return 1
             fi
-
-      # # Here's where you will add some code to rollback on failure   
-      # - destroy-prometheus-environment
             
       # Send prometheus status to kvdb.io
       - run:
@@ -254,6 +251,9 @@ jobs:
             export PrometheusStatus="OK"
             curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '${PrometheusStatus}'
             curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
+
+      # # Here's where you will add some code to rollback on failure   
+      - destroy-prometheus-environment
 
       - slack/notify:
           channel: general
