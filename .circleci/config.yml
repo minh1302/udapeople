@@ -243,12 +243,19 @@ jobs:
       - attach_workspace:
           at: ~/
 
+
       - run:
           name: Get PROMETHEUS_IP url
           command: |          
-            PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
+          
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+              --output text > ~/PROMETHEUS_IP.txt
+
+            export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
             echo "PROMETHEUS_IP = ${PROMETHEUS_IP}"
-            PROMETHEUS_URL="http://${PROMETHEUS_IP}:9090/targets"
+            export PROMETHEUS_URL="http://${PROMETHEUS_IP}:9090/targets"
             echo "${PROMETHEUS_URL}" > ~/PROMETHEUS_URL.txt
             chmod 777 ~/PROMETHEUS_URL.txt
             cat ~/PROMETHEUS_URL.txt
