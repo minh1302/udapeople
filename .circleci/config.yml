@@ -74,7 +74,7 @@ jobs:
             export KEY="PrometheusStatus"
             PrometheusStatus=$(cat PrometheusStatus.txt)
             echo "PrometheusStatus = ${PrometheusStatus}"
-            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}" -d ${PrometheusStatus}"
+            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY} -d ${PrometheusStatus}"
             curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
 
       - run:
@@ -272,7 +272,7 @@ jobs:
               return 0
             else
               export PrometheusStatus="ERROR"
-              curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d ${PrometheusStatus}"
+              curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}  -d ${PrometheusStatus}"
               curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
               return 1
             fi            
