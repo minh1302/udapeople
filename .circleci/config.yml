@@ -69,7 +69,7 @@ jobs:
           name: Send prometheus status to kvdb.io
           command: |   
             export KEY="PrometheusStatus"
-            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '${PrometheusStatus}'
+            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d "${PrometheusStatus}""
             curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
 
       # # Here's where you will add some code to rollback on failure   
@@ -79,7 +79,7 @@ jobs:
           name: Check prometheus status , status OK -> job fail and do not create infrastructure
           command: |
             
-            if (( $PROMETHEUS_STATUS == 'OK' ));
+            if (( $PROMETHEUS_STATUS = 'OK' ));
             then              
               echo "PROMETHEUS_STATUS = ${PROMETHEUS_STATUS}"
               exit 1
