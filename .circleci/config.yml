@@ -105,7 +105,7 @@ jobs:
       - run:
           name: install tar gzip
           command: |
-            yum -y install tar gzip
+            yum -y install tar gzip curl
 
       - run:
           name: Get prometheus status
