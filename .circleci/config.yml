@@ -107,9 +107,9 @@ jobs:
           name: Deploy prometheus server
           command: |    
             echo "Contents  of the ~/inventory.txt file is -------"
-            cat ~/inventory.txt
+            cat ~/prometheus_inventory.txt
 
-            ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
+            ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/configure-prometheus-server.yml
 
       # Remote EC2 to check backend status
       # pm2 list
