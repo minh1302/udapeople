@@ -192,14 +192,14 @@ jobs:
       - run:
           name: Get prometheus status
           command: |
-            export KEY="PrometheusStatus"
-            export PrometheusStatus=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY})
+            KEY="PrometheusStatus"
+            PrometheusStatus=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY})
             echo "${PrometheusStatus}" > PrometheusStatus.txt
 
       - run:
           name: Deploy prometheus server
           command: |    
-            export PrometheusStatus = $(cat PrometheusStatus.txt)
+            PrometheusStatus=$(cat PrometheusStatus.txt)
             echo "PrometheusStatus = ${PrometheusStatus}"
 
             echo "Contents  of the ~/inventory.txt file is -------"
@@ -246,9 +246,9 @@ jobs:
       - run:
           name: Get PROMETHEUS_IP url
           command: |          
-            export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
+            PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
             echo "PROMETHEUS_IP = ${PROMETHEUS_IP}"
-            export PROMETHEUS_URL="http://${PROMETHEUS_IP}:9090/targets"
+            PROMETHEUS_URL="http://${PROMETHEUS_IP}:9090/targets"
             echo "${PROMETHEUS_URL}" > ~/PROMETHEUS_URL.txt
             chmod 777 ~/PROMETHEUS_URL.txt
             cat ~/PROMETHEUS_URL.txt
@@ -256,7 +256,7 @@ jobs:
       - run:
           name: PROMETHEUS smoke test.
           command: |
-            export PrometheusStatus="ERROR"
+            PrometheusStatus="ERROR"
 
             URL=$(cat ~/PROMETHEUS_URL.txt)            
             echo ${URL} 
@@ -266,12 +266,12 @@ jobs:
             if curl -s ${URL} | grep "Prometheus Time Series Collection and Processing Server"
             then
                 # Change this to 0 after the job fails
-              export PrometheusStatus="OK"
+              PrometheusStatus="OK"
               curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}" -d "${PrometheusStatus}"
               curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
               return 0
             else
-              export PrometheusStatus="ERROR"
+              PrometheusStatus="ERROR"
               curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}" -d "${PrometheusStatus}"
               curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
               return 1
