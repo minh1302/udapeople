@@ -229,6 +229,7 @@ jobs:
           name: install tar gzip
           command: |
             yum -y install tar gzip
+
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -264,26 +265,14 @@ jobs:
 
             export BACKEND_IP=$(cat ~/BACKEND_IP.txt)
             echo "${BACKEND_IP}" >> ~/inventory.txt
-            cat ~/inventory.txt                 
+
+            cat ~/inventory.txt      
 
       - persist_to_workspace:
           root: ~/
           paths:
             - inventory.txt  
             - BACKEND_IP.txt
-
-      # Here's where you will add some code to rollback on failure  
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
-
-      - revert-migrations:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
-
-      - slack/notify:
-          channel: general
-          event: fail
-          template: basic_fail_1
-
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible      
