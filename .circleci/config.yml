@@ -39,7 +39,7 @@ jobs:
           
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=prometheus-server" \
+              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
               --output text > ~/PROMETHEUS_IP.txt
 
             export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
@@ -123,26 +123,12 @@ jobs:
 
       - run:
           name: Add prometheus ip to ansible prometheus_inventory
-          command: |
-            echo "[web]" > ~/prometheus_inventory.txt
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
-              --output text > ~/BACKEND_IP.txt
-
-            export BACKEND_IP=$(cat ~/BACKEND_IP.txt)
-            echo "${BACKEND_IP}" >> ~/prometheus_inventory.txt
-
-            cat ~/prometheus_inventory.txt                 
-
-      - run:
-          name: Add prometheus ip to ansible prometheus_inventory
           command: |            
             
             echo "[prometheus]" > ~/prometheus_inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=prometheus-server" \
+              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
               --output text > ~/PROMETHEUS_IP.txt
 
             export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)
@@ -278,7 +264,7 @@ jobs:
           channel: general
           event: pass
           template: success_tagged_deploy_1
-          
+
 workflows:
   default:
     jobs:
