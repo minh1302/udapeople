@@ -14,6 +14,87 @@ commands:
             
 jobs:
 
+  smoke-test-prometheus-server-before-deploy:
+    docker:
+      # Lightweight Docker image 
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update curl
+            pip3 install --no-cache-dir awscli
+            echo ${PWD}
+
+      - attach_workspace:
+          at: ~/
+
+      - run:
+          name: Get PROMETHEUS_IP url
+          command: |          
+          
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=prometheus-server" \
+              --output text > ~/PROMETHEUS_IP.txt
+
+            export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
+            echo "PROMETHEUS_IP = ${PROMETHEUS_IP}"
+            export PROMETHEUS_URL="http://${BACKEND_IP}:9090/targets"
+            echo "${PROMETHEUS_URL}" > ~/PROMETHEUS_URL.txt
+            chmod 777 ~/PROMETHEUS_URL.txt
+            cat ~/PROMETHEUS_URL.txt
+
+      - run:
+          name: PROMETHEUS smoke test.
+          command: |
+            export PrometheusStatus="ERROR"
+
+            URL=$(cat ~/PROMETHEUS_URL.txt)            
+            echo ${URL} 
+            #  | grep "Targets"
+            if curl -s ${URL}
+            then
+              export PrometheusStatus="OK"
+            else
+              export PrometheusStatus="ERROR"
+            fi
+
+      # # Here's where you will add some code to rollback on failure   
+      - destroy-prometheus-environment
+            
+      # Send prometheus status to kvdb.io
+      - run:
+          name: Send prometheus status to kvdb.io
+          command: |   
+            export KEY="PrometheusStatus"
+            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '${PrometheusStatus}'
+            curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
+
+      - run:
+          name: Check prometheus status , status OK -> job fail and do not create infrastructure
+          command: |
+            
+            if (( $PROMETHEUS_STATUS == 'OK' ));
+            then              
+              echo "PROMETHEUS_STATUS = ${PROMETHEUS_STATUS}"
+              exit 1
+            fi
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1 
+          
+      - slack/notify:
+          channel: general
+          event: pass
+          template: success_tagged_deploy_1
+
   deploy-prometheus-infrastructure:
     docker:
       # Docker image here that supports AWS CLI
@@ -25,6 +106,12 @@ jobs:
           name: install tar gzip
           command: |
             yum -y install tar gzip
+
+      - run:
+          name: Get prometheus status
+          command: |
+            export KEY="PrometheusStatus"
+            export PROMETHEUS_STATUS=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY})
 
       - run:
           name: Ensure prometheus infrastructure exists
@@ -157,6 +244,8 @@ jobs:
       - run:
           name: PROMETHEUS smoke test.
           command: |
+            export PrometheusStatus="ERROR"
+
             URL=$(cat ~/PROMETHEUS_URL.txt)            
             echo ${URL} 
             #  | grep "Targets"
@@ -169,21 +258,40 @@ jobs:
             fi
 
       # # Here's where you will add some code to rollback on failure   
-      - destroy-prometheus-environment
+      # - destroy-prometheus-environment
+            
+      # Send prometheus status to kvdb.io
+      - run:
+          name: Send prometheus status to kvdb.io
+          command: |   
+            KEY="PrometheusStatus"
+            export PrometheusStatus="OK"
+            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '${PrometheusStatus}'
+            curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
 
       - slack/notify:
           channel: general
           event: fail
           template: basic_fail_1 
+          
+      - slack/notify:
+          channel: general
+          event: pass
+          template: success_tagged_deploy_1
 
 workflows:
   default:
     jobs:
-      - deploy-prometheus-infrastructure:
-          context: SLACK_APP
+      # - smoke-test-prometheus-server-before-deploy:
+      #     context: SLACK_APP
+      #     filters:
+      #       branches:
+      #         only: [prometheus-server]   
+      - deploy-prometheus-infrastructure: 
+          # requires: [smoke-test-prometheus-server-before-deploy]
           filters:
             branches:
-              only: [prometheus-server]    
+              only: [prometheus-server]   
       - configure-prometheus-server:
           context: SLACK_APP
           requires: [deploy-prometheus-infrastructure]
