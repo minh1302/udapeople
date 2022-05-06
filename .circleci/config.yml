@@ -115,15 +115,15 @@ jobs:
       - run:
           name: Get prometheus status
           command: |
-            export KEY="PrometheusStatus"
-            export PrometheusStatus=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY})
+            KEY="PrometheusStatus"
+            PrometheusStatus=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY})
             echo "${PrometheusStatus}" > PrometheusStatus.txt
             echo "PrometheusStatus = ${PrometheusStatus}"
 
       - run:
           name: Ensure prometheus infrastructure exists
           command: |
-            export PrometheusStatus = $(cat PrometheusStatus.txt)
+            PrometheusStatus=$(cat PrometheusStatus.txt)
             echo "PrometheusStatus = ${PrometheusStatus}"
 
             if (( $PrometheusStatus != 'OK' ));
