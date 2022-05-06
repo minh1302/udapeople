@@ -121,7 +121,7 @@ jobs:
             PrometheusStatus=$(cat PrometheusStatus.txt)
             echo "PrometheusStatus = ${PrometheusStatus}"
 
-            if ((! $PrometheusStatus = 'OK' ));
+            if ((! $PrometheusStatus = 'OK' ))
             then     
               echo "deploy-prometheus-infrastructure"
               aws cloudformation deploy \
