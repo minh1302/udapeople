@@ -246,12 +246,7 @@ jobs:
               curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '\"${PrometheusStatus}\"'
               curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
               return 1
-            fi
-            
-      # Send prometheus status to kvdb.io
-      - run:
-          name: Send prometheus status to kvdb.io
-          command: |   
+            fi            
 
       # # Here's where you will add some code to rollback on failure   
       - destroy-prometheus-environment
