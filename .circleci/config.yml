@@ -326,6 +326,21 @@ jobs:
             pip3 install --no-cache-dir awscli
 
       - run:
+          name: Add prometheus ip to ansible prometheus_inventory
+          command: |            
+            
+            echo "[prometheus]" > ~/prometheus_inventory.txt
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+              --output text > ~/PROMETHEUS_IP.txt
+
+            export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)
+            echo "${PROMETHEUS_IP}" >> ~/prometheus_inventory.txt
+
+            cat ~/prometheus_inventory.txt              
+
+      - run:
           name: Get prometheus status
           command: |
             KEY="PrometheusStatus"
