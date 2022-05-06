@@ -23,77 +23,92 @@ jobs:
       - checkout
 
       # Install dependencies
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update curl
-            pip3 install --no-cache-dir awscli
-            echo ${PWD}
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       apk add --update curl
+      #       pip3 install --no-cache-dir awscli
+      #       echo ${PWD}
 
-      - attach_workspace:
-          at: ~/
+      # - attach_workspace:
+      #     at: ~/
 
-      - run:
-          name: Get PROMETHEUS_IP url
-          command: |          
+      # - run:
+      #     name: Get PROMETHEUS_IP url
+      #     command: |          
           
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
-              --output text > ~/PROMETHEUS_IP.txt
+      #       aws ec2 describe-instances \
+      #         --query 'Reservations[*].Instances[*].PublicIpAddress' \
+      #         --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+      #         --output text > ~/PROMETHEUS_IP.txt
 
-            export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
-            echo "PROMETHEUS_IP = ${PROMETHEUS_IP}"
-            export PROMETHEUS_URL="http://${PROMETHEUS_IP}:9090/targets"
-            echo "${PROMETHEUS_URL}" > ~/PROMETHEUS_URL.txt
-            chmod 777 ~/PROMETHEUS_URL.txt
-            cat ~/PROMETHEUS_URL.txt
+      #       export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
+      #       echo "PROMETHEUS_IP = ${PROMETHEUS_IP}"
+      #       export PROMETHEUS_URL="http://${PROMETHEUS_IP}:9090/targets"
+      #       echo "${PROMETHEUS_URL}" > ~/PROMETHEUS_URL.txt
+      #       chmod 777 ~/PROMETHEUS_URL.txt
+      #       cat ~/PROMETHEUS_URL.txt
+
 
       - run:
-          name: PROMETHEUS smoke test.
+          name: if test.
           command: |
             PrometheusStatus="ERROR"
 
-            URL=$(cat ~/PROMETHEUS_URL.txt)            
-            echo ${URL}             
-            
-            if curl -s ${URL} | grep "Prometheus Time Series Collection and Processing Server"
-            then
-              PrometheusStatus="OK"
-            else
-              PrometheusStatus="ERROR"
+            if ((! $PrometheusStatus = "OK" ))
+            then     
+              echo "deploy-prometheus-infrastructure"
+              aws cloudformation deploy \
+                --template-file .circleci/files/prometheus_server.yml \
+                --stack-name "udapeople-prometheus-server" \
+                --tags project=udapeople
             fi
 
-            echo "${PrometheusStatus}" > PrometheusStatus.txt
-            cat PrometheusStatus.txt
+      # - run:
+      #     name: PROMETHEUS smoke test.
+      #     command: |
+      #       PrometheusStatus="ERROR"
+
+      #       URL=$(cat ~/PROMETHEUS_URL.txt)            
+      #       echo ${URL}             
             
-      # Send prometheus status to kvdb.io
-      - run:
-          name: Send prometheus status to kvdb.io
-          command: |   
-            export KEY="PrometheusStatus"
-            PrometheusStatus=$(cat PrometheusStatus.txt)
-            echo "PrometheusStatus = ${PrometheusStatus}"
-            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}" -d "${PrometheusStatus}"
-            curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
+      #       if curl -s ${URL} | grep "Prometheus Time Series Collection and Processing Server"
+      #       then
+      #         PrometheusStatus="OK"
+      #       else
+      #         PrometheusStatus="ERROR"
+      #       fi
 
-      - run:
-          name: Check prometheus status , status OK -> job fail and do not create infrastructure
-          command: |
+      #       echo "${PrometheusStatus}" > PrometheusStatus.txt
+      #       cat PrometheusStatus.txt
             
-            PrometheusStatus=$(cat PrometheusStatus.txt)
-            echo "PrometheusStatus = ${PrometheusStatus}"
+      # # Send prometheus status to kvdb.io
+      # - run:
+      #     name: Send prometheus status to kvdb.io
+      #     command: |   
+      #       export KEY="PrometheusStatus"
+      #       PrometheusStatus=$(cat PrometheusStatus.txt)
+      #       echo "PrometheusStatus = ${PrometheusStatus}"
+      #       curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}" -d "${PrometheusStatus}"
+      #       curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
 
-            if (( $PrometheusStatus = 'OK' ));
-            then              
-              echo "PrometheusStatus = ${PrometheusStatus}"
-              exit 1
-            fi
+      # - run:
+      #     name: Check prometheus status , status OK -> job fail and do not create infrastructure
+      #     command: |
+            
+      #       PrometheusStatus=$(cat PrometheusStatus.txt)
+      #       echo "PrometheusStatus = ${PrometheusStatus}"
 
-      - slack/notify:
-          channel: general
-          event: fail
-          template: basic_fail_1 
+      #       if (( $PrometheusStatus = 'OK' ));
+      #       then              
+      #         echo "PrometheusStatus = ${PrometheusStatus}"
+      #         exit 1
+      #       fi
+
+      # - slack/notify:
+      #     channel: general
+      #     event: fail
+      #     template: basic_fail_1 
 
   deploy-prometheus-infrastructure:
     docker:
@@ -103,9 +118,9 @@ jobs:
       # Checkout code from git
       - checkout
       - run:
-          name: install tar gzip
+          name: install dependencies
           command: |
-            yum -y install tar gzip curl
+            yum -y install curl
 
       - run:
           name: Get prometheus status
@@ -301,15 +316,15 @@ workflows:
           filters:
             branches:
               only: [prometheus-server]   
-      - deploy-prometheus-infrastructure: 
-          context: SLACK_APP
-          requires: [smoke-test-prometheus-server-before-deploy]
-          filters:
-            branches:
-              only: [prometheus-server]   
-      - configure-prometheus-server:
-          context: SLACK_APP
-          requires: [deploy-prometheus-infrastructure]
-      - smoke-test-prometheus-server:
-          context: SLACK_APP
-          requires: [configure-prometheus-server]
+      # - deploy-prometheus-infrastructure: 
+      #     context: SLACK_APP
+      #     requires: [smoke-test-prometheus-server-before-deploy]
+      #     filters:
+      #       branches:
+      #         only: [prometheus-server]   
+      # - configure-prometheus-server:
+      #     context: SLACK_APP
+      #     requires: [deploy-prometheus-infrastructure]
+      # - smoke-test-prometheus-server:
+      #     context: SLACK_APP
+      #     requires: [configure-prometheus-server]
