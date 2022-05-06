@@ -278,7 +278,7 @@ jobs:
           channel: general
           event: pass
           template: success_tagged_deploy_1
-
+          
 workflows:
   default:
     jobs:
