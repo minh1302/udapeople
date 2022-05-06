@@ -94,11 +94,6 @@ jobs:
           channel: general
           event: fail
           template: basic_fail_1 
-          
-      - slack/notify:
-          channel: general
-          event: pass
-          template: success_tagged_deploy_1
 
   deploy-prometheus-infrastructure:
     docker:
@@ -126,7 +121,7 @@ jobs:
             PrometheusStatus=$(cat PrometheusStatus.txt)
             echo "PrometheusStatus = ${PrometheusStatus}"
 
-            if (( $PrometheusStatus != 'OK' ));
+            if ((! $PrometheusStatus = 'OK' ));
             then     
               echo "deploy-prometheus-infrastructure"
               aws cloudformation deploy \
