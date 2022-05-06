@@ -55,9 +55,9 @@ jobs:
             export PrometheusStatus="ERROR"
 
             URL=$(cat ~/PROMETHEUS_URL.txt)            
-            echo ${URL} 
-            #  | grep "Targets"
-            if curl -s ${URL}
+            echo ${URL}             
+            
+            if curl -s ${URL} | grep "Prometheus Time Series Collection and Processing Server"
             then
               export PrometheusStatus="OK"
             else
