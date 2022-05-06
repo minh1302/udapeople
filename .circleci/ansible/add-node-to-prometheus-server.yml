@@ -26,4 +26,4 @@
       changed_when: false
 
   roles:
-    - add-node-to-prometheus-server
+    - configure-prometheus-server

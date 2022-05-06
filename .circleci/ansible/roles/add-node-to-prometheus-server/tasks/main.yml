@@ -1,0 +1,30 @@
+---
+    
+- name: "copy BACKEND_IP.txt"
+  become: true
+  copy:
+    src: BACKEND_IP.txt
+    dest: /tmp/BACKEND_IP.txt
+
+- name: "copy JOB_NODE_EXPORTER_TEMPLATE.txt"
+  become: true
+  copy:
+    src: JOB_NODE_EXPORTER_TEMPLATE.txt
+    dest: /tmp/JOB_NODE_EXPORTER_TEMPLATE.txt
+    
+- name: add nodes to /etc/prometheus/prometheus.yml
+  become: true
+  shell: |
+    BACKEND_IP=$(cat /tmp/BACKEND_IP.txt)
+    sed 's/IP/${BACKEND_IP}/g' /tmp/JOB_NODE_EXPORTER_TEMPLATE.txt
+    JOB_NODE_EXPORTER=$(cat /tmp/JOB_NODE_EXPORTER_TEMPLATE.txt)
+    echo "${JOB_NODE_EXPORTER}" >> /etc/prometheus/prometheus.yml
+
+
+- name: "enable prometheus service"
+  become: true
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: prometheus
+    enabled: yes

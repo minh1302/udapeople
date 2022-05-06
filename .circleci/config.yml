@@ -192,8 +192,25 @@ jobs:
             PrometheusStatus=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY})
             echo "${PrometheusStatus}" > PrometheusStatus.txt
 
+
+
       - run:
-          name: Deploy prometheus server
+          name: Add prometheus ip to ansible prometheus_inventory
+          command: |            
+            
+            echo "[prometheus]" > ~/prometheus_inventory.txt
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+              --output text > ~/PROMETHEUS_IP.txt
+
+            export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)
+            echo "${PROMETHEUS_IP}" >> ~/prometheus_inventory.txt
+
+            cat ~/prometheus_inventory.txt             
+
+      - run:
+          name: add node to prometheus server
           command: |    
             PrometheusStatus=$(cat PrometheusStatus.txt)
             echo "PrometheusStatus = ${PrometheusStatus}"
@@ -203,14 +220,8 @@ jobs:
             
             if (!( $PrometheusStatus = "OK" ))
             then     
-              ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/configure-prometheus-server.yml
+              ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/add-node-to-prometheus-server.yml
             fi
-
-      # Remote EC2 to check backend status
-      # pm2 list
-      # pm2 logs npm
-      # sudo apt install net-tools
-      #  netstat -na | grep 3030
       
       # Here's where you will add some code to rollback on failure   
       - destroy-prometheus-environment
@@ -293,6 +304,61 @@ jobs:
           event: pass
           template: success_tagged_deploy_1
 
+  add-nodes-to-prometheus-server:
+    docker:
+      # Lightweight Docker image 
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+
+      # Add ssh keys with fingerprint      
+      - add_ssh_keys:
+          fingerprints: ["45:8b:60:3b:68:26:7f:2e:f1:88:e2:35:96:1d:14:73"] 
+          # You can get this ID in the section where you registered the SSH Key
+          
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            apk add --update tar gzip ansible nodejs npm curl
+            pip3 install --no-cache-dir awscli
+
+      - run:
+          name: Get prometheus status
+          command: |
+            KEY="PrometheusStatus"
+            PrometheusStatus=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY})
+            echo "${PrometheusStatus}" > PrometheusStatus.txt
+
+      - run:
+          name: Add nodes to prometheus server
+          command: |    
+            BACKEND_IP=$(cat BACKEND_IP.txt)
+
+            PrometheusStatus=$(cat PrometheusStatus.txt)
+            echo "PrometheusStatus = ${PrometheusStatus}"
+
+            echo "Contents  of the ~/inventory.txt file is -------"
+            cat ~/prometheus_inventory.txt
+            
+            if ( $PrometheusStatus = "OK" )
+            then     
+              ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/configure-prometheus-server.yml
+            fi
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1 
+          
+      - slack/notify:
+          channel: general
+          event: pass
+          template: success_tagged_deploy_1
+
+
 workflows:
   default:
     jobs:
@@ -313,3 +379,6 @@ workflows:
       - smoke-test-prometheus-server:
           context: SLACK_APP
           requires: [configure-prometheus-server]
+      - add-nodes-to-prometheus-server:
+          context: SLACK_APP
+          requires: [smoke-test-prometheus-server]
