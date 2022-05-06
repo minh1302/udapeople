@@ -393,6 +393,6 @@ workflows:
       # - smoke-test-prometheus-server:
       #     context: SLACK_APP
       #     requires: [configure-prometheus-server]
-      - add-nodes-to-prometheus-server:
-          context: SLACK_APP
+      # - add-nodes-to-prometheus-server:
+      #     context: SLACK_APP
           # requires: [smoke-test-prometheus-server]

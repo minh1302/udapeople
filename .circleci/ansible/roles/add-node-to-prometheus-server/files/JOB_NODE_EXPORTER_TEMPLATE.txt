@@ -1,5 +1,1 @@
-  - job_name: 'node_exporter'
-
-    static_configs:
-
       - targets: ['IP:9100']
