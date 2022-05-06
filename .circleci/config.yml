@@ -69,6 +69,7 @@ jobs:
           name: Send prometheus status to kvdb.io
           command: |   
             export KEY="PrometheusStatus"
+            echo "PrometheusStatus = ${PrometheusStatus}"
             curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}" -d ${PrometheusStatus}"
             curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
 
