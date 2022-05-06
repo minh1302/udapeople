@@ -128,6 +128,7 @@ jobs:
 
             if (( $PrometheusStatus != 'OK' ));
             then     
+              echo "deploy-prometheus-infrastructure"
               aws cloudformation deploy \
                 --template-file .circleci/files/prometheus_server.yml \
                 --stack-name "udapeople-prometheus-server" \
