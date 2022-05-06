@@ -1,10 +1,5 @@
 Description: >
-  UdaPeople backend stack.
-
-Parameters:
-  WorkflowID:
-    Description: Unique identifier.
-    Type: String
+  UdaPeople proemetheus stack.
 
 Resources:
   InstanceSecurityGroup:
@@ -52,4 +47,4 @@ Resources:
         InstanceId: !Ref EC2Instance
         Tags:
         - Key: Name
-          Value: !Sub Elastic IP for Server backend-${WorkflowID}
+          Value: !Sub Elastic IP for udapeople-prometheus-server
