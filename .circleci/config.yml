@@ -70,8 +70,7 @@ jobs:
             - prometheus_inventory.txt
 
       # Here's where you will add some code to rollback on failure  
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - deploy-prometheus-infrastructure
 
       - slack/notify:
           channel: general
@@ -119,11 +118,7 @@ jobs:
       #  netstat -na | grep 3030
       
       # Here's where you will add some code to rollback on failure   
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
-
-      - revert-migrations:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - deploy-prometheus-infrastructure
 
       - slack/notify:
           channel: general
@@ -171,12 +166,9 @@ jobs:
             else
               return 1
             fi
-      # # Here's where you will add some code to rollback on failure   
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
 
-      - revert-migrations:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      # # Here's where you will add some code to rollback on failure   
+      - deploy-prometheus-infrastructure
 
       - slack/notify:
           channel: general
