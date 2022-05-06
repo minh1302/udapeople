@@ -72,7 +72,7 @@ jobs:
           name: Send prometheus status to kvdb.io
           command: |   
             export KEY="PrometheusStatus"
-            export PrometheusStatus = $(cat PrometheusStatus.txt)
+            PrometheusStatus=$(cat PrometheusStatus.txt)
             echo "PrometheusStatus = ${PrometheusStatus}"
             curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}" -d ${PrometheusStatus}"
             curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
@@ -81,6 +81,9 @@ jobs:
           name: Check prometheus status , status OK -> job fail and do not create infrastructure
           command: |
             
+            PrometheusStatus=$(cat PrometheusStatus.txt)
+            echo "PrometheusStatus = ${PrometheusStatus}"
+
             if (( $PrometheusStatus = 'OK' ));
             then              
               echo "PrometheusStatus = ${PrometheusStatus}"
