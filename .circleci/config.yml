@@ -288,6 +288,7 @@ workflows:
       #       branches:
       #         only: [prometheus-server]   
       - deploy-prometheus-infrastructure: 
+          context: SLACK_APP
           # requires: [smoke-test-prometheus-server-before-deploy]
           filters:
             branches:
