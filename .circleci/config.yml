@@ -70,7 +70,7 @@ jobs:
             - prometheus_inventory.txt
 
       # Here's where you will add some code to rollback on failure  
-      - deploy-prometheus-infrastructure
+      - destroy-prometheus-environment
 
       - slack/notify:
           channel: general
@@ -118,7 +118,7 @@ jobs:
       #  netstat -na | grep 3030
       
       # Here's where you will add some code to rollback on failure   
-      - deploy-prometheus-infrastructure
+      - destroy-prometheus-environment
 
       - slack/notify:
           channel: general
@@ -168,7 +168,7 @@ jobs:
             fi
 
       # # Here's where you will add some code to rollback on failure   
-      - deploy-prometheus-infrastructure
+      - destroy-prometheus-environment
 
       - slack/notify:
           channel: general
