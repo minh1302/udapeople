@@ -69,7 +69,7 @@ jobs:
           name: Send prometheus status to kvdb.io
           command: |   
             export KEY="PrometheusStatus"
-            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '\"${PrometheusStatus}\"'
+            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}" -d ${PrometheusStatus}"
             curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
 
       - run:
@@ -251,12 +251,12 @@ jobs:
             then
                 # Change this to 0 after the job fails
               export PrometheusStatus="OK"
-              curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '\"${PrometheusStatus}\"'
+              curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}  -d ${PrometheusStatus}"
               curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
               return 0
             else
               export PrometheusStatus="ERROR"
-              curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '\"${PrometheusStatus}\"'
+              curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d ${PrometheusStatus}"
               curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
               return 1
             fi            
