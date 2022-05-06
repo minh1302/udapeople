@@ -159,7 +159,8 @@ jobs:
           command: |
             URL=$(cat ~/PROMETHEUS_URL.txt)            
             echo ${URL} 
-            if curl -s ${URL} | grep "Targets"
+            #  | grep "Targets"
+            if curl -s ${URL}
             then
                 # Change this to 0 after the job fails
               return 0
