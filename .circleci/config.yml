@@ -231,12 +231,20 @@ jobs:
 
             URL=$(cat ~/PROMETHEUS_URL.txt)            
             echo ${URL} 
+
+            KEY="PrometheusStatus"
             
             if curl -s ${URL} | grep "Prometheus Time Series Collection and Processing Server"
             then
                 # Change this to 0 after the job fails
+              export PrometheusStatus="OK"
+              curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '\"${PrometheusStatus}\"'
+              curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
               return 0
             else
+              export PrometheusStatus="ERROR"
+              curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '\"${PrometheusStatus}\"'
+              curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
               return 1
             fi
             
@@ -244,10 +252,6 @@ jobs:
       - run:
           name: Send prometheus status to kvdb.io
           command: |   
-            KEY="PrometheusStatus"
-            export PrometheusStatus="OK"
-            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"  -d '\"${PrometheusStatus}\"'
-            curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY}"
 
       # # Here's where you will add some code to rollback on failure   
       - destroy-prometheus-environment
