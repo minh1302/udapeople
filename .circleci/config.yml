@@ -335,7 +335,6 @@ jobs:
       - run:
           name: Add nodes to prometheus server
           command: |    
-            BACKEND_IP=$(cat BACKEND_IP.txt)
 
             PrometheusStatus=$(cat PrometheusStatus.txt)
             echo "PrometheusStatus = ${PrometheusStatus}"
@@ -362,23 +361,23 @@ jobs:
 workflows:
   default:
     jobs:
-      - smoke-test-prometheus-server-before-deploy:
-          context: SLACK_APP
-          filters:
-            branches:
-              only: [prometheus-server]   
-      - deploy-prometheus-infrastructure: 
-          context: SLACK_APP
-          requires: [smoke-test-prometheus-server-before-deploy]
-          filters:
-            branches:
-              only: [prometheus-server]   
-      - configure-prometheus-server:
-          context: SLACK_APP
-          requires: [deploy-prometheus-infrastructure]
-      - smoke-test-prometheus-server:
-          context: SLACK_APP
-          requires: [configure-prometheus-server]
+      # - smoke-test-prometheus-server-before-deploy:
+      #     context: SLACK_APP
+      #     filters:
+      #       branches:
+      #         only: [prometheus-server]   
+      # - deploy-prometheus-infrastructure: 
+      #     context: SLACK_APP
+      #     requires: [smoke-test-prometheus-server-before-deploy]
+      #     filters:
+      #       branches:
+      #         only: [prometheus-server]   
+      # - configure-prometheus-server:
+      #     context: SLACK_APP
+      #     requires: [deploy-prometheus-infrastructure]
+      # - smoke-test-prometheus-server:
+      #     context: SLACK_APP
+      #     requires: [configure-prometheus-server]
       - add-nodes-to-prometheus-server:
           context: SLACK_APP
-          requires: [smoke-test-prometheus-server]
+          # requires: [smoke-test-prometheus-server]
