@@ -113,10 +113,14 @@ jobs:
       - run:
           name: Ensure prometheus infrastructure exists
           command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/prometheus_server.yml \
-              --stack-name "udapeople-prometheus-server" \
-              --tags project=udapeople
+            
+            if (( $PROMETHEUS_STATUS != 'OK' ));
+            then     
+              aws cloudformation deploy \
+                --template-file .circleci/files/prometheus_server.yml \
+                --stack-name "udapeople-prometheus-server" \
+                --tags project=udapeople
+            fi
 
       - run:
           name: Add prometheus ip to ansible prometheus_inventory
@@ -174,12 +178,21 @@ jobs:
             pip3 install --no-cache-dir awscli
 
       - run:
+          name: Get prometheus status
+          command: |
+            export KEY="PrometheusStatus"
+            export PROMETHEUS_STATUS=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/${KEY})
+
+      - run:
           name: Deploy prometheus server
           command: |    
             echo "Contents  of the ~/inventory.txt file is -------"
             cat ~/prometheus_inventory.txt
-
-            ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/configure-prometheus-server.yml
+            
+            if (( $PROMETHEUS_STATUS != 'OK' ));
+            then     
+              ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/configure-prometheus-server.yml
+            fi
 
       # Remote EC2 to check backend status
       # pm2 list
