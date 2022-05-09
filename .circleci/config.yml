@@ -220,7 +220,7 @@ jobs:
             
             if (!( $PrometheusStatus = "OK" ))
             then     
-              ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/add-node-to-prometheus-server.yml
+              ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/configure-prometheus-server.yml
             fi
       
       # Here's where you will add some code to rollback on failure   
@@ -359,7 +359,7 @@ jobs:
             
             if ( $PrometheusStatus = "OK" )
             then     
-              ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/configure-prometheus-server.yml
+              ansible-playbook -i ~/prometheus_inventory.txt .circleci/ansible/add-node-to-prometheus-server.yml
             fi
 
       - slack/notify:
@@ -393,6 +393,6 @@ workflows:
       - smoke-test-prometheus-server:
           context: SLACK_APP
           requires: [configure-prometheus-server]
-      - add-nodes-to-prometheus-server:
-          context: SLACK_APP
-          requires: [smoke-test-prometheus-server]
+      # - add-nodes-to-prometheus-server:
+      #     context: SLACK_APP
+      #     requires: [smoke-test-prometheus-server]
