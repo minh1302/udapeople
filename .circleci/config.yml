@@ -10,7 +10,7 @@ commands:
           name: Destroy prometheus cloudformation stacks
           when: on_fail         
           command: |
-            aws cloudformation delete-stack --stack-name udapeople-prometheus-server
+            aws cloudformation delete-stack --stack-name prometheus-server
             
 jobs:
 
@@ -39,7 +39,7 @@ jobs:
           
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+              --filters "Name=tag:Name,Values=prometheus-server" \
               --output text > ~/PROMETHEUS_IP.txt
 
             export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
@@ -126,7 +126,7 @@ jobs:
               echo "deploy-prometheus-infrastructure"
               aws cloudformation deploy \
                 --template-file .circleci/files/prometheus_server.yml \
-                --stack-name "udapeople-prometheus-server" \
+                --stack-name "prometheus-server" \
                 --tags project=udapeople
             fi
 
@@ -137,7 +137,7 @@ jobs:
             echo "[prometheus]" > ~/prometheus_inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+              --filters "Name=tag:Name,Values=prometheus-server" \
               --output text > ~/PROMETHEUS_IP.txt
 
             export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)
@@ -201,7 +201,7 @@ jobs:
             echo "[prometheus]" > ~/prometheus_inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+              --filters "Name=tag:Name,Values=prometheus-server" \
               --output text > ~/PROMETHEUS_IP.txt
 
             export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)
@@ -257,7 +257,7 @@ jobs:
           
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+              --filters "Name=tag:Name,Values=prometheus-server" \
               --output text > ~/PROMETHEUS_IP.txt
 
             export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
@@ -332,7 +332,7 @@ jobs:
             echo "[prometheus]" > ~/prometheus_inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+              --filters "Name=tag:Name,Values=prometheus-server" \
               --output text > ~/PROMETHEUS_IP.txt
 
             export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)

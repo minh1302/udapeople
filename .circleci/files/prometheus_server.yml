@@ -39,7 +39,7 @@ Resources:
       ImageId:  ami-0c4f7023847b90238 
       Tags:
         - Key: Name
-          Value: !Sub udapeople-prometheus-server
+          Value: !Sub prometheus-server
 
   EIP:
     Type: AWS::EC2::EIP
@@ -47,4 +47,4 @@ Resources:
         InstanceId: !Ref EC2Instance
         Tags:
         - Key: Name
-          Value: !Sub Elastic IP for udapeople-prometheus-server
+          Value: !Sub Elastic IP for prometheus-server
