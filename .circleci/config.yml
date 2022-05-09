@@ -391,7 +391,7 @@ jobs:
           command: |
             export BACKEND_IP=$(cat ~/BACKEND_IP.txt)            
             export API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL=${API_URL}" >> frontend/.env
+            echo "API_URL=${API_URL}" > frontend/.env
             cat frontend/.env
       - run:
           name: Deploy frontend objects
