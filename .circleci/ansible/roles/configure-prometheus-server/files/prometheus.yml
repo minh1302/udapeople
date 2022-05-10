@@ -23,6 +23,8 @@ scrape_configs:
         access_key: AKIAQ5YKJACGMN2AB6XW
         secret_key: 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
         port: 9100
-    static_configs:
-      - targets: ['ec2-3-226-27-6.compute-1.amazonaws.com:9100']
+    
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance
 
