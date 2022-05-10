@@ -661,46 +661,46 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend:
-      #     context: SLACK_APP
-      # - build-backend:
-      #     context: SLACK_APP
-      # - test-frontend:
-      #     context: SLACK_APP
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     context: SLACK_APP
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     context: SLACK_APP
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     context: SLACK_APP
-      #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     context: SLACK_APP
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [master]
-      # - configure-infrastructure:
-      #     context: SLACK_APP
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     context: SLACK_APP
-      #     requires: [configure-infrastructure]          
+      - build-frontend:
+          context: SLACK_APP
+      - build-backend:
+          context: SLACK_APP
+      - test-frontend:
+          context: SLACK_APP
+          requires: [build-frontend]
+      - test-backend:
+          context: SLACK_APP
+          requires: [build-backend]
+      - scan-backend:
+          context: SLACK_APP
+          requires: [build-backend]
+      - scan-frontend:
+          context: SLACK_APP
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          context: SLACK_APP
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          context: SLACK_APP
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          context: SLACK_APP
+          requires: [configure-infrastructure]          
       - deploy-frontend:
           context: SLACK_APP
-          # requires: [run-migrations]
-      # - deploy-backend:
-      #     context: SLACK_APP
-      #     requires: [run-migrations]
-      # - smoke-test:
-      #     context: SLACK_APP
-      #     requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     context: SLACK_APP
-      #     requires: [smoke-test]          
-      # - cleanup:
-      #     context: SLACK_APP
-      #     requires: [cloudfront-update]
+          requires: [run-migrations]
+      - deploy-backend:
+          context: SLACK_APP
+          requires: [run-migrations]
+      - smoke-test:
+          context: SLACK_APP
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          context: SLACK_APP
+          requires: [smoke-test]          
+      - cleanup:
+          context: SLACK_APP
+          requires: [cloudfront-update]
