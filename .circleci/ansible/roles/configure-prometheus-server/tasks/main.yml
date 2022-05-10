@@ -99,6 +99,12 @@
   copy:
     src: alertmanager.yml
     dest: /etc/prometheus/
+
+- name: "copy rules.yml to /etc/prometheus/"
+  become: true
+  copy:
+    src: rules.yml
+    dest: /etc/prometheus/
     
 - name: change the permissions of the directories
   become: true
