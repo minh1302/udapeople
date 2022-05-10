@@ -26,9 +26,15 @@
     cd /home/{{ ansible_user }}/extracted/backend  
     npm install
     
-- name: pm2 start
-  become: yes
-  shell: |
-    cd /home/{{ ansible_user }}/extracted/backend   
-    # pm2 stop default
-    pm2 start npm -- start
+- name: Install dependencies
+  become: true
+  command: npm install
+  args:
+    chdir: /home/{{ ansible_user }}/extracted/backend
+
+    
+- name: Use pm2 to run backend
+  become: true
+  command: pm2 start dist/main.js --name "backend" -i max
+  args:
+    chdir: /home/{{ ansible_user }}/extracted/backend
