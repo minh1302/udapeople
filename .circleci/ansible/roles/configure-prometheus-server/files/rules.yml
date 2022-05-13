@@ -11,10 +11,10 @@ groups:
       description: " of job  has been down for more than 3 minutes."
 
   - alert: GettingOutOfMemory
-    expr: max(sum by(instance) ((((node_memory_MemTotal_bytes) - (node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes)) / (node_memory_MemTotal_bytes)) * 100)) >=2
+    expr: max(sum by(instance) ((((node_memory_MemTotal_bytes) - (node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes)) / (node_memory_MemTotal_bytes)) * 100)) >=1
     for: 1m
     labels:
       severity: warning
     annotations:
-       description: Docker Swarm node {{ $labels.instance }} memory usage is at {{ humanize $value}}%.
+       description: Docker Swarm node backend-cdf4475  ip:172.31.29.202 memory usage is at {{ humanize $value}}%.
        summary: Memory is getting low for Swarm node '{{ $labels.node_name }}'
