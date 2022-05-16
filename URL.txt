@@ -4,8 +4,16 @@ https://github.com/minh1302/udapeople
 
 
 [URL02]  
-Provide the public URL for your S3 Bucket (aka, your front-end). 
-http://udapeople-a568e6c.s3-website-us-east-1.amazonaws.com
+Public URL for my S3 Bucket from kvdb.io
+Because udacity session is alive only 3 hours.
+I will try to keep the server online from 9 A.M  (GMT+7)  to 9 P.M  (GMT+7)
+I hope you could arrange your time to review my submission in that time.
+
+If not, I will redeploy my project 9 A.M  (GMT+7)  every day, and you can refresh the link below to get new url.
+
+Thank you very much.
+
+https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/udacity_url
 
 [URL3]
 dsbktqns9s7tz.cloudfront.net
