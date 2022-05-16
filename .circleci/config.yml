@@ -415,7 +415,7 @@ jobs:
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"     
             echo ${URL} 
             sudo echo "insecure" >> ~/.curlrc
-            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/udacity_url  -d ${URL}"
+            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/udacity_url"  -d "${URL}"
             curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/udacity_url"
 
       # Here's where you will add some code to rollback on failure
