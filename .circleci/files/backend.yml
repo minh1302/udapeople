@@ -47,7 +47,7 @@ Resources:
           DeviceIndex: "0"
           GroupSet: 
             - Ref: "InstanceSecurityGroup"
-        - SubnetId: "public-subnet-1"
+          SubnetId: "public-subnet-1"
 
   # EIP:
   #   Type: AWS::EC2::EIP
