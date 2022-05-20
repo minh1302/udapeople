@@ -43,8 +43,7 @@ Resources:
           Value: !Sub backend-${WorkflowID}
       # Add subnet   for another aws
       NetworkInterfaces: 
-        SubnetId: 
-          Ref: "public-subnet-1"
+        SubnetId: "public-subnet-1"
 
   # EIP:
   #   Type: AWS::EC2::EIP
