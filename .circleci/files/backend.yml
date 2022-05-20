@@ -41,6 +41,11 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub backend-${WorkflowID}
+      
+      
+    NetworkInterfaces: 
+      SubnetId: 
+        Ref: "public-subnet-1"
 
   # EIP:
   #   Type: AWS::EC2::EIP
