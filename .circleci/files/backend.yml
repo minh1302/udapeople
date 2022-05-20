@@ -43,10 +43,10 @@ Resources:
           Value: !Sub backend-${WorkflowID}
       # Add subnet   for another aws
       NetworkInterfaces: 
-      - AssociatePublicIpAddress: "true"
-        DeviceIndex: "0"
-        GroupSet: 
-          - Ref: "InstanceSecurityGroup"
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: 
+            - Ref: "InstanceSecurityGroup"
         - SubnetId: "public-subnet-1"
 
   # EIP:
