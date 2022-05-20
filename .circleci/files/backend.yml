@@ -30,8 +30,8 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      SecurityGroups:
-        - Ref: InstanceSecurityGroup
+      # SecurityGroups:
+      #   - Ref: InstanceSecurityGroup
       KeyName: udapeople
       # If you use another key pair name, you should change this value to match.
       # If this ami id is not available for you, you can find another (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
@@ -43,6 +43,10 @@ Resources:
           Value: !Sub backend-${WorkflowID}
       # Add subnet   for another aws
       NetworkInterfaces: 
+      - AssociatePublicIpAddress: "true"
+        DeviceIndex: "0"
+        GroupSet: 
+          - Ref: "InstanceSecurityGroup"
         - SubnetId: "public-subnet-1"
 
   # EIP:
